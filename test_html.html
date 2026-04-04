@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftGenius | Curated Gifting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        bebas: ['"Bebas Neue"', 'sans-serif'],
+                        rajdhani: ['"Rajdhani"', 'sans-serif'],
+                        mono: ['"Space Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: { 500: '#FF4500', 900: '#0F0F0F' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base & Resets */
+        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; color: #fff; cursor: none; }
+        
+        /* Typography specifics */
+        .text-outline { -webkit-text-stroke: 1px rgba(255,255,255,0.5); color: transparent; }
+        .text-gradient { background: linear-gradient(90deg, #FF4500, #FF8C00); -webkit-background-clip: text; color: transparent; }
+        
+        /* Custom Cursor */
+        #cursor-dot { width: 8px; height: 8px; background: white; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; }
+        #cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.1s ease-out, border-color 0.2s; }
+        
+        /* Layouts (Expanded to 500vw for 5 slides) */
+        #track { width: 500vw; height: 100vh; display: flex; transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1); will-change: transform; }
+        .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        
+        /* Parallax Backgrounds */
+        .bg-layer { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-size: cover; background-position: center; transition: transform 0.1s linear; z-index: 1; }
+        .bg-layer::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%); }
+        .slide-content { position: relative; z-index: 10; width: 100%; height: 100%; padding: 2rem; display: flex; flex-direction: column; opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        
+        /* Glassmorphism */
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* UI Elements */
+        .corner-bracket { position: fixed; width: 20px; height: 20px; z-index: 50; border-color: rgba(255,255,255,0.3); border-style: solid; }
+        .cb-tl { top: 20px; left: 20px; border-width: 2px 0 0 2px; }
+        .cb-tr { top: 20px; right: 20px; border-width: 2px 2px 0 0; }
+        .cb-bl { bottom: 20px; left: 20px; border-width: 0 0 2px 2px; }
+        .cb-br { bottom: 20px; right: 20px; border-width: 0 2px 2px 0; }
+        
+        .pulse-dot { width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        /* Ticker */
+        .ticker-wrap { position: fixed; bottom: 0; width: 100%; height: 30px; background: rgba(0,0,0,0.8); z-index: 40; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; }
+        .ticker { display: flex; white-space: nowrap; animation: ticker 25s linear infinite; font-family: 'Space Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Form & Scroll areas */
+        .scrollable-content { overflow-y: auto; overflow-x: hidden; max-height: calc(100vh - 120px); padding-right: 10px; pointer-events: auto; }
+        .scrollable-content::-webkit-scrollbar { width: 4px; height: 4px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+        
+        input, textarea, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; transition: border-color 0.3s; font-family: 'Rajdhani', sans-serif; cursor: none !important; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #FF4500; background: rgba(255,255,255,0.1); }
+        option { background: #111; color: white; }
+
+        /* Confidence Meter */
+        .meter-track { width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .meter-fill { height: 100%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); width: 0%; box-shadow: 0 0 10px rgba(255, 69, 0, 0.5); }
+        .meter-fill.bg-[#10B981] { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        
+        /* Toast */
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-20px); background: #FF4500; color: white; font-family: 'Space Mono'; font-size: 0.8rem; padding: 10px 20px; border-radius: 4px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="corner-bracket cb-tl"></div>
+    <div class="corner-bracket cb-tr"></div>
+    <div class="corner-bracket cb-bl"></div>
+    <div class="corner-bracket cb-br"></div>
+    
+    <nav class="fixed top-6 left-10 right-10 flex justify-between items-center z-50 font-mono text-sm tracking-widest uppercase text-white/70">
+        <div class="flex items-center gap-2"><span class="pulse-dot"></span> GG.AI</div>
+        <div class="flex gap-4 md:gap-6 text-xs md:text-sm">
+            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(0)">Home</span>
+            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(1)">Curate</span>
+            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(2)">Shortlist</span>
+            <span class="hover:text-white transition-colors nav-link cursor-pointer hidden md:inline-block" onclick="goToSlide(3)">Top 3 Picks</span>
+            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(4)">Impact</span>
+        </div>
+    </nav>
+
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <span>// NO MORE BORING GIFTS // CURATED BY AI // ZERO RETURN RATES // POWERED BY GEMINI // SCROLL TO NAVIGATE // &nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span>// NO MORE BORING GIFTS // CURATED BY AI // ZERO RETURN RATES // POWERED BY GEMINI // SCROLL TO NAVIGATE // &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+
+    <div id="toast">Message here</div>
+
+    <div id="track">
+        
+        <section class="slide" id="slide-0">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content justify-between p-10 lg:p-20">
+                <div class="flex-1"></div> 
+                <div class="flex flex-col lg:flex-row justify-between items-end w-full gap-10">
+                    <div class="flex flex-col gap-4 max-w-2xl">
+                        <div class="font-mono text-sm tracking-widest uppercase text-gray-400 flex items-center gap-3">
+                            <span class="h-[1px] w-8 bg-gray-400"></span> Redefining Gifting
+                        </div>
+                        <h1 class="font-bebas text-7xl lg:text-9xl leading-[0.85] tracking-tight">
+                            <span class="block">STOP</span>
+                            <span class="block text-outline">GUESSING</span>
+                            <span class="block text-gradient">START CURATING</span>
+                        </h1>
+                        <p class="font-rajdhani text-xl text-gray-300 font-medium max-w-md mt-2">
+                            AI-driven curation tailored for the Indian market. Practical, easy-to-source gifts that actually matter.
+                        </p>
+                        <div class="flex gap-4 mt-6">
+                            <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-8 py-4 hover:bg-gray-200 transition-colors">Start Curating</button>
+                            <button onclick="goToSlide(4)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold glass px-8 py-4 hover:bg-white/10 transition-colors">View Impact</button>
+                        </div>
+                    </div>
+
+                    <div class="glass p-8 rounded-2xl max-w-sm flex flex-col gap-6 w-full lg:w-auto">
+                        <div>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mb-1">Happy Customers</p>
+                            <p class="font-bebas text-5xl text-white" id="stat-happy-home">0</p>
+                        </div>
+                        <div class="h-[1px] w-full bg-white/10"></div>
+                        <div>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mb-1">Gifts Shortlisted</p>
+                            <p class="font-bebas text-4xl text-white" id="stat-shortlisted">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-1">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-24 pb-12">
+                <div class="glass p-8 lg:p-12 rounded-3xl w-full max-w-3xl scrollable-content border-t border-white/20">
+                    <div class="mb-8 border-b border-white/10 pb-6">
+                        <h2 class="font-bebas text-5xl tracking-wide">Tell Us About Them</h2>
+                        <p class="font-rajdhani text-lg text-gray-400 mt-2">We focus on practical, easily accessible items in India (₹).</p>
+                    </div>
+
+                    <form id="giftForm" class="space-y-6 font-rajdhani">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Recipient</label>
+                                <input type="text" id="recipient" placeholder="e.g., Rohan (Best Friend)" class="w-full px-5 py-4 rounded-xl text-lg interactive-element" required>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Occasion</label>
+                                <input type="text" id="occasion" placeholder="e.g., Promotion, Birthday" class="w-full px-5 py-4 rounded-xl text-lg interactive-element" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Budget Range (INR)</label>
+                            <select id="budget" class="w-full px-5 py-4 rounded-xl text-lg interactive-element">
+                                <option value="Under ₹1000">Simple & Sweet (Under ₹1000)</option>
+                                <option value="₹1000 - ₹3000" selected>Standard (₹1000 - ₹3000)</option>
+                                <option value="₹3000 - ₹7000">Premium (₹3000 - ₹7000)</option>
+                                <option value="Luxury (₹7000+)">Luxury (₹7000+)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">The Details</label>
+                            <textarea id="description" rows="3" placeholder="He loves brewing coffee, reading sci-fi, and practical tech gadgets." class="w-full px-5 py-4 rounded-xl text-lg interactive-element resize-none" required></textarea>
+                            
+                            <div class="flex gap-2 overflow-x-auto mt-4 scrollable-content pb-2 pt-1">
+                                <button type="button" onclick="toggleTag(this, 'Fitness Freak')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Fitness Freak</button>
+                                <button type="button" onclick="toggleTag(this, 'Techie')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Techie</button>
+                                <button type="button" onclick="toggleTag(this, 'Minimalist')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Minimalist</button>
+                                <button type="button" onclick="toggleTag(this, 'Foodie')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Foodie</button>
+                                <button type="button" onclick="toggleTag(this, 'Sentimental')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Sentimental</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnGenerate" class="w-full bg-brand-500 hover:bg-brand-500/80 text-white font-bebas text-2xl tracking-widest py-4 rounded-xl transition-colors interactive-btn flex justify-center items-center mt-4">
+                            <span id="btnText">Analyze & Curate</span>
+                            <div id="btnSpinner" class="hidden loader border-2 border-brand-900 border-t-white rounded-full w-5 h-5 ml-3"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-2">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content pt-24 pb-12 w-full max-w-6xl mx-auto flex flex-col h-full">
+                
+                <div class="flex justify-between items-end mb-6">
+                    <h2 class="font-bebas text-5xl tracking-wide">Curated Selection</h2>
+                    <div class="font-mono text-sm tracking-widest bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                        Shortlist: <span id="sl-count" class="text-brand-500 font-bold">0</span>/3
+                    </div>
+                </div>
+
+                <div id="emptyState" class="flex-1 flex flex-col items-center justify-center text-center glass rounded-3xl border border-white/10">
+                    <p class="font-rajdhani text-2xl text-gray-400 mb-4">No curation generated yet.</p>
+                    <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-6 py-3 hover:bg-gray-200 transition-colors">Go to Form</button>
+                </div>
+
+                <div id="resultsArea" class="hidden flex-1 overflow-hidden flex flex-col gap-6">
+                    <div id="giftsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 scrollable-content pb-20">
+                        </div>
+                </div>
+
+                <div id="actionActionBar" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 glass px-8 py-4 rounded-full border border-white/20 flex items-center gap-6 opacity-0 pointer-events-none transition-all duration-500 translateY(20px)">
+                    <span class="font-rajdhani font-bold text-lg whitespace-nowrap">Shortlist Complete!</span>
+                    <button onclick="viewTop3Picks()" class="interactive-btn bg-brand-500 font-mono text-xs uppercase tracking-widest font-bold px-6 py-3 rounded-full hover:bg-white hover:text-black transition-colors whitespace-nowrap">View Top 3 Picks</button>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="slide" id="slide-3">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-24 pb-12 w-full max-w-6xl mx-auto flex flex-col h-full">
+                
+                <div class="text-center mb-8">
+                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-brand-500">Here are your top 3 picks!</h2>
+                    <p class="font-rajdhani text-xl text-gray-200 mt-2 font-medium">Click the links to buy on Amazon or customize them locally.</p>
+                </div>
+
+                <div id="recipientEmpty" class="flex-1 flex flex-col items-center justify-center glass rounded-3xl border border-white/10 w-full text-center p-8">
+                    <p class="font-rajdhani text-2xl text-gray-400 mb-4">Complete your shortlist to see your top picks here.</p>
+                    <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white/10 text-white px-6 py-3 border border-white/20 hover:bg-white/20 transition-colors">Back to Start</button>
+                </div>
+
+                <div id="recipientGrid" class="hidden grid-cols-1 md:grid-cols-3 gap-6 w-full scrollable-content pb-4">
+                    </div>
+
+                <div id="satisfactionBox" class="hidden w-full max-w-3xl mx-auto mt-6 glass p-6 rounded-2xl border border-white/20 text-center">
+                    <h3 class="font-rajdhani text-2xl font-bold mb-4">Are you satisfied with these gift curations?</h3>
+                    <div id="voteButtons" class="flex justify-center gap-4">
+                        <button onclick="submitSatisfaction(true)" class="interactive-btn bg-green-600 hover:bg-green-500 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">YES</button>
+                        <button onclick="submitSatisfaction(false)" class="interactive-btn bg-gray-700 hover:bg-gray-600 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">NO</button>
+                    </div>
+                    <div id="voteResponse" class="hidden font-bebas text-2xl tracking-widest text-brand-500 mt-2"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="slide" id="slide-4">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop'); opacity: 0.7;"></div>
+            <div class="slide-content items-center pt-24 pb-12 w-full max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-white">My Impact</h2>
+                    <p class="font-rajdhani text-xl text-gray-400 mt-2">Tracking business metrics and customer satisfaction through curation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto scrollable-content pb-10">
+                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2">
+                        <p class="font-mono text-xs text-brand-500 uppercase tracking-widest mb-3 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/30">Leading Metric</p>
+                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white">Curations Generated</h3>
+                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg" id="metric-curations">0</p>
+                        <p class="text-sm text-gray-400 font-rajdhani">Measures top-of-funnel engagement and usage of the AI engine.</p>
+                    </div>
+
+                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2">
+                        <p class="font-mono text-xs text-blue-400 uppercase tracking-widest mb-3 bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/30">Lagging Metric</p>
+                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white">Gifts Shortlisted</h3>
+                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg" id="metric-shortlisted">0</p>
+                        <p class="text-sm text-gray-400 font-rajdhani">Indicates successful conversion from generic ideas to targeted selections.</p>
+                    </div>
+
+                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2 relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 opacity-10">
+                            <svg class="w-40 h-40 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <p class="font-mono text-xs text-green-400 uppercase tracking-widest mb-3 bg-green-400/10 px-3 py-1 rounded-full border border-green-400/30 relative z-10">Product Market Fit</p>
+                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white relative z-10">Happy Customers</h3>
+                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg relative z-10" id="metric-happy">0</p>
+                        <p class="text-sm text-gray-400 font-rajdhani relative z-10">Count of users who explicitly validated that their generated curation was highly satisfactory.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION (ADD YOUR API KEY HERE)
+        // ==========================================
+        const apiKey = prompt("Enter your Gemini API Key:");
+        const modelName = "gemini-2.5-flash"; 
+        
+        // FIX 1: Using the v1beta endpoint which supports responseSchema reliably
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+        // Example Test Function (Fixed Payload)
+        async function sendMessage() {
+            if (!apiKey) {
+                alert("API Key is required!");
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [{ text: "Suggest a great gift for a tech enthusiast." }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error("API Error:", data.error.message);
+                    alert("API Error: " + data.error.message);
+                } else {
+                    const resultText = data.candidates[0].content.parts[0].text;
+                    console.log("Gemini Success:", resultText);
+                }
+            } catch (err) {
+                console.error("Connection Error:", err);
+            }
+        }
+
+        // ==========================================
+        // SLIDER & PARALLAX LOGIC
+        // ==========================================
+        let currentSlide = 0;
+        const totalSlides = 5; 
+        const track = document.getElementById('track');
+        const bgLayers = document.querySelectorAll('.bg-layer');
+        let isAnimating = false;
+
+        function updateSlideContentAnimations() {
+            document.querySelectorAll('.slide-content').forEach((content, index) => {
+                content.style.transition = 'none';
+                content.style.opacity = '0';
+                content.style.transform = 'translateY(40px)';
+                void content.offsetWidth; 
+                if(index === currentSlide) {
+                    content.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s';
+                    content.style.opacity = '1';
+                    content.style.transform = 'translateY(0)';
+                }
+            });
+            document.querySelectorAll('.nav-link').forEach((link, idx) => {
+                link.style.opacity = idx === currentSlide ? '1' : '0.5';
+            });
+        }
+
+        function goToSlide(index) {
+            if (isAnimating || index < 0 || index >= totalSlides) return;
+            isAnimating = true;
+            currentSlide = index;
+            track.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            updateSlideContentAnimations();
+            setTimeout(() => { isAnimating = false; }, 1000);
+        }
+
+        window.addEventListener('wheel', (e) => {
+            if(Math.abs(e.deltaY) < 30) return; 
+            if (e.target.closest('.scrollable-content')) {
+                const el = e.target.closest('.scrollable-content');
+                const isAtTop = el.scrollTop === 0 && e.deltaY < 0;
+                const isAtBottom = Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) < 1 && e.deltaY > 0;
+                if (!isAtTop && !isAtBottom) return;
+            }
+            if (e.deltaY > 0) goToSlide(currentSlide + 1);
+            else goToSlide(currentSlide - 1);
+        }, { passive: false });
+
+        window.addEventListener('keydown', (e) => {
+            if(document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goToSlide(currentSlide - 1);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20; 
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            bgLayers.forEach(layer => {
+                layer.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+            });
+        });
+
+        bgLayers.forEach(layer => layer.style.transform = 'scale(1.05)');
+        updateSlideContentAnimations();
+
+        // ==========================================
+        // CUSTOM CURSOR
+        // ==========================================
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        let mouseX = window.innerWidth / 2; let mouseY = window.innerHeight / 2;
+        let ringX = mouseX; let ringY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            cursorDot.style.left = mouseX + 'px'; cursorDot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.2; ringY += (mouseY - ringY) * 0.2;
+            cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        function bindCursorHover() {
+            const interactives = document.querySelectorAll('.interactive-btn, .interactive-element, a, .tag-btn');
+            interactives.forEach(el => { el.replaceWith(el.cloneNode(true)); });
+            document.querySelectorAll('.interactive-btn, .interactive-element, a, .tag-btn').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorDot.style.width = '4px'; cursorDot.style.height = '4px';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1.5)'; cursorRing.style.borderColor = '#FF4500';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorDot.style.width = '8px'; cursorDot.style.height = '8px';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1)'; cursorRing.style.borderColor = 'rgba(255,255,255,0.4)';
+                });
+            });
+        }
+        bindCursorHover();
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg; toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)';
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-20px)'; }, 3000);
+        }
+
+        // ==========================================
+        // METRICS & STATE
+        // ==========================================
+        let currentShortlist = [];
+        window.latestGifts = [];
+        
+        let allTimeShortlisted = parseInt(localStorage.getItem('gg_total_shortlisted') || '0');
+        let allTimeCurations = parseInt(localStorage.getItem('gg_total_curations') || '0');
+        let allTimeHappy = parseInt(localStorage.getItem('gg_happy_customers') || '0');
+        
+        document.getElementById('stat-shortlisted').innerText = allTimeShortlisted;
+        document.getElementById('metric-shortlisted').innerText = allTimeShortlisted;
+        document.getElementById('metric-curations').innerText = allTimeCurations;
+        document.getElementById('stat-happy-home').innerText = allTimeHappy;
+        document.getElementById('metric-happy').innerText = allTimeHappy;
+
+        // ==========================================
+        // FEATURE: GUIDED INPUT TAGS
+        // ==========================================
+        function toggleTag(btn, tagText) {
+            const textarea = document.getElementById('description');
+            if (btn.classList.contains('bg-brand-500')) {
+                btn.classList.remove('bg-brand-500', 'text-white', 'border-brand-500');
+                btn.classList.add('bg-white/5', 'text-gray-300', 'border-white/20');
+                let text = textarea.value;
+                textarea.value = text.replace(tagText + ', ', '').replace(tagText, '');
+            } else {
+                btn.classList.remove('bg-white/5', 'text-gray-300', 'border-white/20');
+                btn.classList.add('bg-brand-500', 'text-white', 'border-brand-500');
+                let text = textarea.value.trim();
+                if (text.length > 0 && !text.endsWith(',')) text += ', ';
+                textarea.value = text + tagText + ', ';
+            }
+        }
+
+        // ==========================================
+        // GIFTING LOGIC & SHORTLIST
+        // ==========================================
+        function toggleShortlist(btnElement, giftIndex) {
+            const giftObj = window.latestGifts[giftIndex];
+            const existingIndex = currentShortlist.findIndex(g => g.name === giftObj.product_name);
+            const card = document.getElementById(`gift-card-${giftIndex}`);
+            
+            if (existingIndex > -1) {
+                currentShortlist.splice(existingIndex, 1);
+                btnElement.innerHTML = `Add to Shortlist`;
+                btnElement.className = "w-full interactive-btn bg-white/5 hover:bg-white/10 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-white/20 transition-colors mt-6";
+                card.classList.remove('border-brand-500'); card.classList.add('border-white/10');
+            } else {
+                if (currentShortlist.length >= 3) { showToast("Max 3 items allowed in shortlist."); return; }
+                
+                currentShortlist.push({
+                    name: giftObj.product_name,
+                    desc: giftObj.description,
+                    tag: giftObj.category_tag,
+                    tip: giftObj.customization_tip
+                });
+                
+                allTimeShortlisted++;
+                localStorage.setItem('gg_total_shortlisted', allTimeShortlisted);
+                document.getElementById('stat-shortlisted').innerText = allTimeShortlisted;
+                document.getElementById('metric-shortlisted').innerText = allTimeShortlisted;
+
+                btnElement.innerHTML = `✓ Shortlisted`;
+                btnElement.className = "w-full interactive-btn bg-brand-500 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-brand-500 transition-colors mt-6";
+                card.classList.remove('border-white/10'); card.classList.add('border-brand-500');
+            }
+
+            document.getElementById('sl-count').innerText = currentShortlist.length;
+            const actionBar = document.getElementById('actionActionBar');
+            
+            if (currentShortlist.length === 3) {
+                actionBar.style.opacity = '1'; actionBar.style.pointerEvents = 'auto'; actionBar.style.transform = 'translate(-50%, 0)';
+            } else {
+                actionBar.style.opacity = '0'; actionBar.style.pointerEvents = 'none'; actionBar.style.transform = 'translate(-50%, 20px)';
+            }
+            bindCursorHover();
+        }
+
+        // ==========================================
+        // FEATURE: TOP 3 PICKS VIEW
+        // ==========================================
+        function viewTop3Picks() {
+            showToast("Generating your Top 3 Picks...");
+            
+            const recGrid = document.getElementById('recipientGrid');
+            const recEmpty = document.getElementById('recipientEmpty');
+            const satBox = document.getElementById('satisfactionBox');
+            
+            recEmpty.classList.add('hidden');
+            recGrid.classList.remove('hidden');
+            recGrid.classList.add('grid');
+            satBox.classList.remove('hidden'); // Show survey
+            recGrid.innerHTML = '';
+
+            // Reset satisfaction survey UI
+            document.getElementById('voteButtons').classList.remove('hidden');
+            document.getElementById('voteResponse').classList.add('hidden');
+
+            currentShortlist.forEach((gift) => {
+                const amazonSearchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(gift.name)}`;
+                
+                recGrid.innerHTML += `
+                    <div class="glass rounded-2xl p-6 border border-white/10 flex flex-col h-full transition-transform hover:-translate-y-2">
+                        <span class="font-mono text-[10px] uppercase tracking-widest text-brand-500 border border-brand-500/30 px-2 py-1 rounded w-max mb-4 bg-brand-500/10">
+                            ${gift.tag}
+                        </span>
+                        <h3 class="font-bebas text-4xl tracking-wide mb-2 text-white">${gift.name}</h3>
+                        <p class="font-rajdhani text-gray-300 text-[15px] mb-4 leading-relaxed">${gift.desc}</p>
+                        
+                        <div class="bg-white/5 border border-white/10 p-3 rounded-lg mb-6 flex-grow">
+                            <span class="text-xs text-brand-500 font-bold uppercase tracking-wider block mb-1">💡 How to Customize/Get it:</span>
+                            <p class="text-sm font-rajdhani text-gray-300">${gift.tip}</p>
+                        </div>
+
+                        <a href="${amazonSearchUrl}" target="_blank" class="interactive-btn w-full bg-white hover:bg-gray-200 text-black font-mono text-sm tracking-widest uppercase font-bold py-3 text-center rounded-xl transition-colors mt-auto shadow-lg flex items-center justify-center gap-2">
+                            Search on Amazon <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                `;
+            });
+
+            // Reset Shortlist UI on Slide 2
+            currentShortlist = [];
+            document.getElementById('sl-count').innerText = '0';
+            document.getElementById('actionActionBar').style.opacity = '0';
+            
+            bindCursorHover();
+            setTimeout(() => { goToSlide(3); }, 1000);
+        }
+
+        // ==========================================
+        // FEATURE: SATISFACTION SURVEY LOGIC
+        // ==========================================
+        function submitSatisfaction(isHappy) {
+            const btns = document.getElementById('voteButtons');
+            const res = document.getElementById('voteResponse');
+            
+            btns.classList.add('hidden');
+            res.classList.remove('hidden');
+
+            if (isHappy) {
+                allTimeHappy++;
+                localStorage.setItem('gg_happy_customers', allTimeHappy);
+                document.getElementById('stat-happy-home').innerText = allTimeHappy;
+                document.getElementById('metric-happy').innerText = allTimeHappy;
+                
+                showToast("Awesome! We're glad you found the perfect ideas.");
+                res.innerText = "THANKS! WE'RE GLAD YOU LOVED IT.";
+            } else {
+                showToast("Thanks for the feedback. We will improve our AI model.");
+                res.innerText = "WE'LL DO BETTER NEXT TIME.";
+                res.classList.replace('text-brand-500', 'text-gray-400');
+            }
+        }
+
+        // ==========================================
+        // AI GENERATION LOGIC
+        // ==========================================
+        async function fetchGemini(payload) {
+            if (!apiKey) throw new Error("API Key missing! Check the configuration in the code.");
+            
+            const res = await fetch(apiUrl, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            
+            // FIX 2: Upgraded error handling to capture the EXACT error from Google's servers
+            if (!res.ok) {
+                const errorData = await res.json();
+                console.error("Full Google API Error:", errorData);
+                throw new Error(errorData.error?.message || `API Error ${res.status}`);
+            }
+            return await res.json();
+        }
+
+        document.getElementById('giftForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentShortlist = [];
+            document.getElementById('sl-count').innerText = '0';
+            document.getElementById('actionActionBar').style.opacity = '0';
+
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const btnGenerate = document.getElementById('btnGenerate');
+            const giftsGrid = document.getElementById('giftsGrid');
+            
+            btnGenerate.disabled = true;
+            btnText.innerText = "Processing...";
+            btnSpinner.classList.remove('hidden');
+
+            // Increment Curations
+            allTimeCurations++;
+            localStorage.setItem('gg_total_curations', allTimeCurations);
+            document.getElementById('metric-curations').innerText = allTimeCurations;
+
+            const payload = {
+                // FIX 3: Removed role: "system" as it conflicts with v1beta parsing rules sometimes
+                systemInstruction: { 
+                    parts: [{ text: "You are an expert gifting concierge in India. Suggest simple, practical, highly thoughtful gifts that are easily available on Amazon India, Flipkart, or local stores. Include a brief tip on how to customize or present it uniquely." }] 
+                },
+                contents: [{ 
+                    role: "user",
+                    parts: [{ text: `Target: ${document.getElementById('recipient').value} | Occasion: ${document.getElementById('occasion').value} | Budget: ${document.getElementById('budget').value} | Details: ${document.getElementById('description').value}. Generate exactly 4 concepts.` }] 
+                }],
+                generationConfig: {
+                    temperature: 0.8,
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            gifts: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        product_name: { type: "STRING" },
+                                        category_tag: { type: "STRING" },
+                                        description: { type: "STRING", description: "2 sentences. Explain why it fits." },
+                                        customization_tip: { type: "STRING", description: "1 sentence tip on how to make it special or where to source it." },
+                                        estimated_price: { type: "STRING", description: "Use ₹" },
+                                        confidence_score: { type: "INTEGER", description: "A number between 75 and 99" }
+                                    },
+                                    required: ["product_name", "category_tag", "description", "customization_tip", "estimated_price", "confidence_score"]
+                                }
+                            }
+                        }, required: ["gifts"]
+                    }
+                }
+            };
+
+            try {
+                const data = await fetchGemini(payload);
+                const json = JSON.parse(data.candidates[0].content.parts[0].text);
+                window.latestGifts = json.gifts;
+
+                document.getElementById('emptyState').classList.add('hidden');
+                document.getElementById('resultsArea').classList.remove('hidden');
+                giftsGrid.innerHTML = '';
+
+                json.gifts.forEach((gift, index) => {
+                    const meterColor = gift.confidence_score > 90 ? 'bg-[#10B981]' : 'bg-[#FF4500]'; 
+                    const safeName = gift.product_name.replace(/'/g, "\\'");
+
+                    const card = `
+                    <div id="gift-card-${index}" class="glass rounded-2xl p-6 border border-white/10 flex flex-col h-full transition-all duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="font-mono text-[10px] uppercase tracking-widest text-brand-500 border border-brand-500/30 px-2 py-1 rounded bg-brand-500/10">
+                                ${gift.category_tag}
+                            </span>
+                            <span class="font-rajdhani font-bold text-lg text-white">${gift.estimated_price}</span>
+                        </div>
+                        
+                        <h3 class="font-bebas text-3xl tracking-wide mb-2">${gift.product_name}</h3>
+                        <p class="font-rajdhani text-gray-400 text-sm mb-6 flex-grow leading-relaxed">${gift.description}</p>
+                        
+                        <div class="mb-4 w-full bg-white/5 p-3 rounded-lg border border-white/10">
+                            <div class="flex justify-between font-bebas tracking-widest text-sm text-gray-300 mb-2">
+                                <span>AI Match Confidence</span>
+                                <span class="text-white font-bold">${gift.confidence_score}%</span>
+                            </div>
+                            <div class="meter-track">
+                                <div class="meter-fill ${meterColor}" style="width: 0%" data-target="${gift.confidence_score}%"></div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" onclick="toggleShortlist(this, ${index})" class="interactive-btn w-full bg-white/5 hover:bg-white/10 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-white/20 transition-colors">
+                            Add to Shortlist
+                        </button>
+                    </div>`;
+                    giftsGrid.innerHTML += card;
+                });
+                
+                bindCursorHover();
+                goToSlide(2);
+
+                // Animate meters explicitly after rendering
+                setTimeout(() => {
+                    const meters = giftsGrid.querySelectorAll('.meter-fill');
+                    meters.forEach(meter => {
+                        meter.style.width = meter.getAttribute('data-target');
+                    });
+                }, 800);
+
+            } catch (err) {
+                // FIX 4: The toast will now display the EXACT error text from Google instead of just "API Error"
+                showToast("AI Error: " + err.message);
+                console.error("Payload that failed:", JSON.stringify(payload, null, 2));
+            } finally {
+                btnGenerate.disabled = false;
+                btnText.innerText = "Analyze & Curate";
+                btnSpinner.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
