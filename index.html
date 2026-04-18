@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GiftGenius | Curated Gifting</title>
+    <title>GiftGenius Pro | AI Gifting Reimagined</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
@@ -24,30 +24,38 @@
         }
     </script>
     <style>
-        /* Base & Resets */
+        :root {
+            --orange: #FF4500;
+            --orange-glow: rgba(255,69,0,0.3);
+            --green: #10B981;
+            --blue: #3B82F6;
+            --gold: #F59E0B;
+        }
+
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; color: #fff; cursor: none; }
         
-        /* Typography specifics */
         .text-outline { -webkit-text-stroke: 1px rgba(255,255,255,0.5); color: transparent; }
-        .text-gradient { background: linear-gradient(90deg, #FF4500, #FF8C00); -webkit-background-clip: text; color: transparent; }
+        .text-gradient { background: linear-gradient(90deg, #FF4500, #FF8C00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .text-gradient-gold { background: linear-gradient(90deg, #F59E0B, #FCD34D); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         /* Custom Cursor */
-        #cursor-dot { width: 8px; height: 8px; background: white; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; }
-        #cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.1s ease-out, border-color 0.2s; }
+        #cursor-dot { width: 8px; height: 8px; background: white; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s; }
+        #cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.1s ease-out, border-color 0.2s, width 0.2s, height 0.2s; }
         
-        /* Layouts (Expanded to 500vw for 5 slides) */
-        #track { width: 500vw; height: 100vh; display: flex; transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1); will-change: transform; }
-        .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        /* Track */
+        #track { width: 800vw; height: 100vh; display: flex; transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1); will-change: transform; }
+        .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         
-        /* Parallax Backgrounds */
-        .bg-layer { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-size: cover; background-position: center; transition: transform 0.1s linear; z-index: 1; }
-        .bg-layer::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%); }
+        /* Parallax */
+        .bg-layer { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-size: cover; background-position: center; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 1; }
+        .bg-layer::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.85) 100%); }
         .slide-content { position: relative; z-index: 10; width: 100%; height: 100%; padding: 2rem; display: flex; flex-direction: column; opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
         
-        /* Glassmorphism */
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        /* Glass */
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-dark { background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
         
-        /* UI Elements */
+        /* Corner Brackets */
         .corner-bracket { position: fixed; width: 20px; height: 20px; z-index: 50; border-color: rgba(255,255,255,0.3); border-style: solid; }
         .cb-tl { top: 20px; left: 20px; border-width: 2px 0 0 2px; }
         .cb-tr { top: 20px; right: 20px; border-width: 2px 2px 0 0; }
@@ -55,29 +63,98 @@
         .cb-br { bottom: 20px; right: 20px; border-width: 0 2px 2px 0; }
         
         .pulse-dot { width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 
         /* Ticker */
         .ticker-wrap { position: fixed; bottom: 0; width: 100%; height: 30px; background: rgba(0,0,0,0.8); z-index: 40; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; }
-        .ticker { display: flex; white-space: nowrap; animation: ticker 25s linear infinite; font-family: 'Space Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
+        .ticker { display: flex; white-space: nowrap; animation: ticker 35s linear infinite; font-family: 'Space Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* Form & Scroll areas */
+        /* Scrollable */
         .scrollable-content { overflow-y: auto; overflow-x: hidden; max-height: calc(100vh - 120px); padding-right: 10px; pointer-events: auto; }
-        .scrollable-content::-webkit-scrollbar { width: 4px; height: 4px; }
-        .scrollable-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
-        
-        input, textarea, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; transition: border-color 0.3s; font-family: 'Rajdhani', sans-serif; cursor: none !important; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #FF4500; background: rgba(255,255,255,0.1); }
+        .scrollable-content::-webkit-scrollbar { width: 3px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: rgba(255,69,0,0.4); border-radius: 4px; }
+
+        /* Inputs */
+        input, textarea, select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; transition: border-color 0.3s, background 0.3s; font-family: 'Rajdhani', sans-serif; cursor: none !important; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #FF4500; background: rgba(255,69,0,0.07); box-shadow: 0 0 0 3px rgba(255,69,0,0.1); }
         option { background: #111; color: white; }
 
-        /* Confidence Meter */
-        .meter-track { width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }
-        .meter-fill { height: 100%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); width: 0%; box-shadow: 0 0 10px rgba(255, 69, 0, 0.5); }
-        .meter-fill.bg-[#10B981] { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
-        
+        /* Meter - HEIGHT INCREASED AND FIXED */
+        .meter-track { width: 100%; height: 10px; background: rgba(255,255,255,0.15); border-radius: 6px; overflow: hidden; margin-top: 4px; }
+        .meter-fill { height: 100%; border-radius: 6px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); width: 0%; }
+        .meter-orange { background: linear-gradient(90deg, #FF4500, #FF8C00); box-shadow: 0 0 10px rgba(255,69,0,0.5); }
+        .meter-green { background: linear-gradient(90deg, #10B981, #34D399); box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+
         /* Toast */
-        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-20px); background: #FF4500; color: white; font-family: 'Space Mono'; font-size: 0.8rem; padding: 10px 20px; border-radius: 4px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; text-transform: uppercase; letter-spacing: 1px; }
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-20px); background: #FF4500; color: white; font-family: 'Space Mono'; font-size: 0.75rem; padding: 10px 22px; border-radius: 4px; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 1000; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+
+        /* Loader */
+        .loader { border: 2px solid rgba(255,255,255,0.2); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Badge animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+        
+        /* Delivery badge */
+        .delivery-badge { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05)); border: 1px solid rgba(16,185,129,0.4); }
+        .express-badge { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05)); border: 1px solid rgba(245,158,11,0.4); }
+        .gift-wrap-badge { background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(139,92,246,0.05)); border: 1px solid rgba(139,92,246,0.4); }
+
+        /* Card hover */
+        .gift-card { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+        .gift-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+
+        /* Price tag */
+        .price-tag { background: linear-gradient(135deg, rgba(255,69,0,0.15), rgba(255,69,0,0.05)); border: 1px solid rgba(255,69,0,0.3); }
+
+        /* Step indicator */
+        .step-line { height: 2px; background: rgba(255,255,255,0.1); flex: 1; position: relative; overflow: hidden; }
+        .step-line.active::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--orange), #FF8C00); animation: fillLine 0.5s ease forwards; }
+        @keyframes fillLine { from { width: 0; } to { width: 100%; } }
+        .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Space Mono'; transition: all 0.3s ease; flex-shrink: 0; }
+        .step-dot.active { border-color: var(--orange); background: var(--orange); color: white; }
+
+        /* Star rating */
+        .star { cursor: pointer; transition: color 0.1s; }
+        .star.filled { color: #F59E0B; }
+        .star.empty { color: rgba(255,255,255,0.2); }
+
+        /* Occasion & Nav */
+        .occasion-pill { cursor: pointer; transition: all 0.2s ease; }
+        .occasion-pill.active { background: var(--orange); border-color: var(--orange); color: white; }
+        .addon-card { cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.1); }
+        .addon-card.active { border-color: var(--orange); background: rgba(255,69,0,0.1); }
+        .nav-pill { transition: all 0.2s; }
+        .nav-pill.active { background: var(--orange); color: white; }
+
+        /* Side panel */
+        #cartPanel { position: fixed; top: 0; right: -400px; width: 380px; height: 100vh; background: rgba(10,10,10,0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.1); z-index: 200; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        #cartPanel.open { right: 0; }
+        #cartOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #cartOverlay.open { opacity: 1; pointer-events: auto; }
+
+        /* Wishlist heart */
+        .heart-btn { transition: transform 0.2s ease, color 0.2s; }
+        .heart-btn:hover { transform: scale(1.2); }
+        .heart-btn.liked { color: #FF4500; }
+
+        /* Promo banner */
+        .promo-banner { background: linear-gradient(90deg, rgba(255,69,0,0.15), rgba(255,140,0,0.1), rgba(255,69,0,0.15)); border: 1px solid rgba(255,69,0,0.2); animation: shimmer 3s linear infinite; background-size: 200% 100%; }
+
+        /* Confetti */
+        .confetti-piece { position: fixed; width: 10px; height: 10px; top: -20px; animation: confettiFall linear forwards; pointer-events: none; z-index: 9999; }
+        @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+        /* Shine effect on buttons */
+        .btn-shine { position: relative; overflow: hidden; }
+        .btn-shine::after { content: ''; position: absolute; top: -50%; left: -60%; width: 40%; height: 200%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent); transform: skewX(-20deg); transition: left 0.6s ease; }
+        .btn-shine:hover::after { left: 120%; }
+
+        #cartCount { min-width: 18px; height: 18px; background: var(--orange); border-radius: 9px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Space Mono'; transition: transform 0.2s; }
+        #cartCount.bump { transform: scale(1.4); }
     </style>
 </head>
 <body class="bg-black text-white">
@@ -90,36 +167,102 @@
     <div class="corner-bracket cb-bl"></div>
     <div class="corner-bracket cb-br"></div>
     
-    <nav class="fixed top-6 left-10 right-10 flex justify-between items-center z-50 font-mono text-sm tracking-widest uppercase text-white/70">
-        <div class="flex items-center gap-2"><span class="pulse-dot"></span> GG.AI</div>
-        <div class="flex gap-4 md:gap-6 text-xs md:text-sm">
-            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(0)">Home</span>
-            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(1)">Curate</span>
-            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(2)">Shortlist</span>
-            <span class="hover:text-white transition-colors nav-link cursor-pointer hidden md:inline-block" onclick="goToSlide(3)">Top 3 Picks</span>
-            <span class="hover:text-white transition-colors nav-link cursor-pointer" onclick="goToSlide(4)">Impact</span>
+    <div id="toast"></div>
+
+    <div id="cartOverlay" onclick="closeCart()"></div>
+    <div id="cartPanel" class="p-6">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+            <h3 class="font-bebas text-3xl tracking-wide">Your Gift Box</h3>
+            <button onclick="closeCart()" class="interactive-btn text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="cartItems" class="space-y-4 mb-6">
+            <div class="text-center py-12 text-gray-500 font-rajdhani">
+                <div class="text-5xl mb-4">🎁</div>
+                <p>Your gift box is empty</p>
+                <p class="text-sm mt-1 opacity-60">Curate gifts to add them here</p>
+            </div>
+        </div>
+        <div id="cartFooter" class="hidden">
+            <div class="mb-4 p-4 rounded-xl glass space-y-3">
+                <p class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-3">Gift Options</p>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="cart-giftwrap" class="accent-orange-500 w-4 h-4" style="cursor:pointer">
+                    <span class="font-rajdhani text-sm">🎀 Premium Gift Wrap <span class="text-orange-500 font-bold">+₹99</span></span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="cart-message" class="accent-orange-500 w-4 h-4" style="cursor:pointer">
+                    <span class="font-rajdhani text-sm">💌 Personal Message Card <span class="text-orange-500 font-bold">+₹49</span></span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="cart-sameday" class="accent-orange-500 w-4 h-4" style="cursor:pointer">
+                    <span class="font-rajdhani text-sm flex items-center gap-2">⚡ Same-Day Delivery <span class="text-yellow-500 font-bold">+₹149</span> <span class="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 rounded-full">TODAY</span></span>
+                </label>
+            </div>
+
+            <div id="messageCardInput" class="hidden mb-4">
+                <textarea id="giftMessageText" rows="3" placeholder="Write your heartfelt message here..." class="w-full px-4 py-3 rounded-xl text-sm resize-none"></textarea>
+            </div>
+
+            <div class="space-y-2 mb-4 font-rajdhani text-sm">
+                <div class="flex justify-between text-gray-400"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+                <div class="flex justify-between text-gray-400"><span>Add-ons</span><span id="cart-addons">₹0</span></div>
+                <div class="flex justify-between text-gray-400"><span>Delivery</span><span class="text-green-400">FREE</span></div>
+                <div class="flex justify-between font-bold text-white border-t border-white/10 pt-2 mt-2"><span>Total</span><span id="cart-total" class="text-orange-500 font-bebas text-xl">₹0</span></div>
+            </div>
+
+            <button onclick="checkout()" class="interactive-btn btn-shine w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bebas text-xl tracking-widest py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-orange-500/20">
+                Proceed to Checkout →
+            </button>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 left-0 right-0 flex justify-between items-center z-50 px-6 py-4 bg-gradient-to-b from-black/80 to-transparent font-mono text-sm tracking-widest uppercase text-white/70">
+        <div class="flex items-center gap-2">
+            <span class="pulse-dot"></span>
+            <span class="font-bebas text-2xl text-white tracking-widest">GiftGenius</span>
+        </div>
+        <div class="hidden md:flex gap-1 text-xs">
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(0)">Home</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(1)">Occasions</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(2)">Curate</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(3)">Browse</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(4)">Picks</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(5)">Wishlist</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(6)">Reviews</button>
+            <button class="nav-pill px-3 py-1.5 rounded-full transition-all interactive-btn hover:bg-white/10" onclick="goToSlide(7)">Impact</button>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="openCart()" class="interactive-btn relative flex items-center gap-2 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 7H4L5 9z"></path></svg>
+                <div id="cartCount" class="text-white font-bold">0</div>
+            </button>
         </div>
     </nav>
 
     <div class="ticker-wrap">
         <div class="ticker">
-            <span>// NO MORE BORING GIFTS // CURATED BY AI // ZERO RETURN RATES // POWERED BY GEMINI // SCROLL TO NAVIGATE // &nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <span>// NO MORE BORING GIFTS // CURATED BY AI // ZERO RETURN RATES // POWERED BY GEMINI // SCROLL TO NAVIGATE // &nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span>⚡ SAME-DAY DELIVERY AVAILABLE &nbsp;·&nbsp; 🎁 FREE GIFT WRAP ON ORDERS ₹999+ &nbsp;·&nbsp; 🤖 AI-CURATED GIFTING ENGINE &nbsp;·&nbsp; ✨ ZERO RETURN GUARANTEE &nbsp;·&nbsp; 💌 PERSONAL MESSAGE CARDS &nbsp;·&nbsp; 🇮🇳 INDIA-FIRST GIFTING &nbsp;·&nbsp; 🏆 10,000+ HAPPY CUSTOMERS &nbsp;·&nbsp;</span>
+            <span>⚡ SAME-DAY DELIVERY AVAILABLE &nbsp;·&nbsp; 🎁 FREE GIFT WRAP ON ORDERS ₹999+ &nbsp;·&nbsp; 🤖 AI-CURATED GIFTING ENGINE &nbsp;·&nbsp; ✨ ZERO RETURN GUARANTEE &nbsp;·&nbsp; 💌 PERSONAL MESSAGE CARDS &nbsp;·&nbsp; 🇮🇳 INDIA-FIRST GIFTING &nbsp;·&nbsp; 🏆 10,000+ HAPPY CUSTOMERS &nbsp;·&nbsp;</span>
         </div>
     </div>
 
-    <div id="toast">Message here</div>
-
     <div id="track">
-        
+
         <section class="slide" id="slide-0">
             <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2000&auto=format&fit=crop');"></div>
-            <div class="slide-content justify-between p-10 lg:p-20">
-                <div class="flex-1"></div> 
+            <div class="slide-content justify-between p-8 lg:p-16 pt-24">
+                
+                <div class="promo-banner rounded-full px-6 py-2 text-center mb-4 self-center">
+                    <span class="font-mono text-xs text-orange-400 tracking-widest">⚡ TODAY ONLY: FREE SAME-DAY DELIVERY ON ORDERS ₹1499+</span>
+                </div>
+
+                <div class="flex-1"></div>
                 <div class="flex flex-col lg:flex-row justify-between items-end w-full gap-10">
                     <div class="flex flex-col gap-4 max-w-2xl">
                         <div class="font-mono text-sm tracking-widest uppercase text-gray-400 flex items-center gap-3">
-                            <span class="h-[1px] w-8 bg-gray-400"></span> Redefining Gifting
+                            <span class="h-[1px] w-8 bg-gray-400"></span> India's #1 AI Gifting Platform
                         </div>
                         <h1 class="font-bebas text-7xl lg:text-9xl leading-[0.85] tracking-tight">
                             <span class="block">STOP</span>
@@ -127,23 +270,58 @@
                             <span class="block text-gradient">START CURATING</span>
                         </h1>
                         <p class="font-rajdhani text-xl text-gray-300 font-medium max-w-md mt-2">
-                            AI-driven curation tailored for the Indian market. Practical, easy-to-source gifts that actually matter.
+                            AI-driven curation for the Indian market. Practical, thoughtful, same-day delivered — gifts that actually land.
                         </p>
-                        <div class="flex gap-4 mt-6">
-                            <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-8 py-4 hover:bg-gray-200 transition-colors">Start Curating</button>
-                            <button onclick="goToSlide(4)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold glass px-8 py-4 hover:bg-white/10 transition-colors">View Impact</button>
+
+                        <div class="flex flex-wrap gap-3 mt-2">
+                            <div class="delivery-badge rounded-full px-4 py-2 flex items-center gap-2">
+                                <span class="text-green-400 text-xs font-mono">⚡ SAME DAY</span>
+                            </div>
+                            <div class="express-badge rounded-full px-4 py-2 flex items-center gap-2">
+                                <span class="text-yellow-400 text-xs font-mono">🎀 GIFT WRAP</span>
+                            </div>
+                            <div class="gift-wrap-badge rounded-full px-4 py-2 flex items-center gap-2">
+                                <span class="text-purple-400 text-xs font-mono">💌 MSG CARD</span>
+                            </div>
+                            <div class="glass rounded-full px-4 py-2">
+                                <span class="text-gray-300 text-xs font-mono">🔄 FREE RETURNS</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 mt-4">
+                            <button onclick="goToSlide(2)" class="interactive-btn btn-shine font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-8 py-4 hover:bg-gray-200 transition-colors rounded">
+                                Start Curating →
+                            </button>
+                            <button onclick="goToSlide(3)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold glass px-8 py-4 hover:bg-white/10 transition-colors rounded">
+                                Browse Gifts
+                            </button>
                         </div>
                     </div>
 
-                    <div class="glass p-8 rounded-2xl max-w-sm flex flex-col gap-6 w-full lg:w-auto">
-                        <div>
-                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mb-1">Happy Customers</p>
-                            <p class="font-bebas text-5xl text-white" id="stat-happy-home">0</p>
+                    <div class="glass p-8 rounded-2xl max-w-sm flex flex-col gap-5 w-full lg:w-auto">
+                        <div class="font-mono text-xs text-orange-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-3">Live Stats</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Happy Customers</p>
+                                <p class="font-bebas text-4xl text-white" id="stat-happy-home">0</p>
+                            </div>
+                            <div>
+                                <p class="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Gifts Curated</p>
+                                <p class="font-bebas text-4xl text-white" id="stat-curations-home">0</p>
+                            </div>
+                            <div>
+                                <p class="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Shortlisted</p>
+                                <p class="font-bebas text-4xl text-white" id="stat-shortlisted">0</p>
+                            </div>
+                            <div>
+                                <p class="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Wishlisted</p>
+                                <p class="font-bebas text-4xl text-white" id="stat-wishlisted-home">0</p>
+                            </div>
                         </div>
                         <div class="h-[1px] w-full bg-white/10"></div>
-                        <div>
-                            <p class="font-mono text-xs text-gray-400 uppercase tracking-widest mb-1">Gifts Shortlisted</p>
-                            <p class="font-bebas text-4xl text-white" id="stat-shortlisted">0</p>
+                        <div class="flex items-center gap-2">
+                            <span class="pulse-dot"></span>
+                            <span class="font-mono text-xs text-gray-400">Live curation engine active</span>
                         </div>
                     </div>
                 </div>
@@ -151,220 +329,544 @@
         </section>
 
         <section class="slide" id="slide-1">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-20 pb-10 w-full max-w-6xl mx-auto flex flex-col h-full">
+                
+                <div class="text-center mb-8">
+                    <h2 class="font-bebas text-6xl tracking-wide">Shop by Occasion</h2>
+                    <p class="font-rajdhani text-xl text-gray-400 mt-1">Find the perfect gift for every moment</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full scrollable-content pb-4">
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Birthday', '🎂')">
+                        <div class="text-5xl mb-3">🎂</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Birthday</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">150+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Anniversary', '💑')">
+                        <div class="text-5xl mb-3">💑</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Anniversary</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">90+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Diwali', '🪔')">
+                        <div class="text-5xl mb-3">🪔</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Diwali</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">200+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Wedding', '💍')">
+                        <div class="text-5xl mb-3">💍</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Wedding</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">120+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Baby Shower', '👶')">
+                        <div class="text-5xl mb-3">👶</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Baby Shower</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">80+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Graduation', '🎓')">
+                        <div class="text-5xl mb-3">🎓</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Graduation</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">70+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Housewarming', '🏡')">
+                        <div class="text-5xl mb-3">🏡</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Housewarming</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">60+ IDEAS</p>
+                    </div>
+                    <div class="occasion-card interactive-btn glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-orange-500/50 cursor-pointer" onclick="quickCurate('Raksha Bandhan', '🪢')">
+                        <div class="text-5xl mb-3">🪢</div>
+                        <h3 class="font-bebas text-2xl tracking-wide">Rakhi</h3>
+                        <p class="font-mono text-xs text-gray-400 mt-1">100+ IDEAS</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 w-full glass rounded-2xl p-5 border border-white/10">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl mb-1">⚡</div>
+                            <p class="font-bebas text-lg">Same-Day</p>
+                            <p class="font-mono text-xs text-gray-400">Order by 2 PM</p>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">🎀</div>
+                            <p class="font-bebas text-lg">Gift Wrap</p>
+                            <p class="font-mono text-xs text-gray-400">Premium packaging</p>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">💌</div>
+                            <p class="font-bebas text-lg">Message Card</p>
+                            <p class="font-mono text-xs text-gray-400">Handwritten option</p>
+                        </div>
+                        <div>
+                            <div class="text-2xl mb-1">🔄</div>
+                            <p class="font-bebas text-lg">Free Returns</p>
+                            <p class="font-mono text-xs text-gray-400">7-day policy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-2">
             <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2000&auto=format&fit=crop');"></div>
-            <div class="slide-content items-center pt-24 pb-12">
-                <div class="glass p-8 lg:p-12 rounded-3xl w-full max-w-3xl scrollable-content border-t border-white/20">
-                    <div class="mb-8 border-b border-white/10 pb-6">
+            <div class="slide-content items-center pt-20 pb-10">
+                
+                <div class="glass p-6 lg:p-10 rounded-3xl w-full max-w-3xl scrollable-content border-t border-white/20">
+                    <div class="mb-6 border-b border-white/10 pb-5">
                         <h2 class="font-bebas text-5xl tracking-wide">Tell Us About Them</h2>
-                        <p class="font-rajdhani text-lg text-gray-400 mt-2">We focus on practical, easily accessible items in India (₹).</p>
+                        <p class="font-rajdhani text-lg text-gray-400 mt-1">Our AI concierge needs details to find the perfect match.</p>
                     </div>
 
-                    <form id="giftForm" class="space-y-6 font-rajdhani">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form id="giftForm" class="space-y-5 font-rajdhani">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Recipient</label>
-                                <input type="text" id="recipient" placeholder="e.g., Rohan (Best Friend)" class="w-full px-5 py-4 rounded-xl text-lg interactive-element" required>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Who is it for? *</label>
+                                <input type="text" id="recipient" placeholder="e.g., Rohan (Best Friend)" class="w-full px-5 py-3 rounded-xl text-base interactive-element" required>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Occasion</label>
-                                <input type="text" id="occasion" placeholder="e.g., Promotion, Birthday" class="w-full px-5 py-4 rounded-xl text-lg interactive-element" required>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Occasion *</label>
+                                <input type="text" id="occasion" placeholder="e.g., Birthday, Promotion" class="w-full px-5 py-3 rounded-xl text-base interactive-element" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Budget Range (INR)</label>
+                                <select id="budget" class="w-full px-5 py-3 rounded-xl text-base interactive-element">
+                                    <option value="Under ₹500">Tiny Surprise (Under ₹500)</option>
+                                    <option value="Under ₹1000">Simple & Sweet (Under ₹1000)</option>
+                                    <option value="₹1000 - ₹3000" selected>Standard (₹1000 - ₹3000)</option>
+                                    <option value="₹3000 - ₹7000">Premium (₹3000 - ₹7000)</option>
+                                    <option value="₹7000 - ₹15000">Luxury (₹7000 - ₹15000)</option>
+                                    <option value="₹15000+">Ultra Luxury (₹15000+)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Recipient's Age (approx)</label>
+                                <select id="age" class="w-full px-5 py-3 rounded-xl text-base interactive-element">
+                                    <option value="Child (under 12)">Child (under 12)</option>
+                                    <option value="Teenager (12-18)">Teenager (12-18)</option>
+                                    <option value="Young Adult (18-30)" selected>Young Adult (18-30)</option>
+                                    <option value="Adult (30-50)">Adult (30-50)</option>
+                                    <option value="Senior (50+)">Senior (50+)</option>
+                                </select>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">Budget Range (INR)</label>
-                            <select id="budget" class="w-full px-5 py-4 rounded-xl text-lg interactive-element">
-                                <option value="Under ₹1000">Simple & Sweet (Under ₹1000)</option>
-                                <option value="₹1000 - ₹3000" selected>Standard (₹1000 - ₹3000)</option>
-                                <option value="₹3000 - ₹7000">Premium (₹3000 - ₹7000)</option>
-                                <option value="Luxury (₹7000+)">Luxury (₹7000+)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-sm">The Details</label>
-                            <textarea id="description" rows="3" placeholder="He loves brewing coffee, reading sci-fi, and practical tech gadgets." class="w-full px-5 py-4 rounded-xl text-lg interactive-element resize-none" required></textarea>
-                            
-                            <div class="flex gap-2 overflow-x-auto mt-4 scrollable-content pb-2 pt-1">
-                                <button type="button" onclick="toggleTag(this, 'Fitness Freak')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Fitness Freak</button>
-                                <button type="button" onclick="toggleTag(this, 'Techie')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Techie</button>
-                                <button type="button" onclick="toggleTag(this, 'Minimalist')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Minimalist</button>
-                                <button type="button" onclick="toggleTag(this, 'Foodie')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Foodie</button>
-                                <button type="button" onclick="toggleTag(this, 'Sentimental')" class="tag-btn interactive-btn px-4 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-widest text-gray-300 hover:text-white hover:border-brand-500 transition-colors whitespace-nowrap bg-white/5">Sentimental</button>
+                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Describe Their Interests *</label>
+                            <textarea id="description" rows="3" placeholder="He loves brewing coffee, reading sci-fi, and practical tech gadgets..." class="w-full px-5 py-3 rounded-xl text-base interactive-element resize-none" required></textarea>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <button type="button" onclick="toggleTag(this, 'Fitness Freak')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">💪 Fitness</button>
+                                <button type="button" onclick="toggleTag(this, 'Techie')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">💻 Techie</button>
+                                <button type="button" onclick="toggleTag(this, 'Minimalist')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">🤍 Minimalist</button>
+                                <button type="button" onclick="toggleTag(this, 'Foodie')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">🍜 Foodie</button>
+                                <button type="button" onclick="toggleTag(this, 'Sentimental')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">💛 Sentimental</button>
+                                <button type="button" onclick="toggleTag(this, 'Book Lover')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">📚 Reader</button>
+                                <button type="button" onclick="toggleTag(this, 'Traveller')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">✈️ Traveller</button>
+                                <button type="button" onclick="toggleTag(this, 'Artist')" class="tag-btn interactive-btn px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono text-gray-300 hover:border-orange-500 transition-colors bg-white/5">🎨 Artist</button>
                             </div>
                         </div>
 
-                        <button type="submit" id="btnGenerate" class="w-full bg-brand-500 hover:bg-brand-500/80 text-white font-bebas text-2xl tracking-widest py-4 rounded-xl transition-colors interactive-btn flex justify-center items-center mt-4">
-                            <span id="btnText">Analyze & Curate</span>
-                            <div id="btnSpinner" class="hidden loader border-2 border-brand-900 border-t-white rounded-full w-5 h-5 ml-3"></div>
+                        <div>
+                            <label class="block font-bold text-gray-300 mb-3 uppercase tracking-wider text-xs">Delivery Preference</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="addon-card rounded-xl p-3 text-center active" onclick="selectDelivery(this, 'standard')" id="del-standard">
+                                    <div class="text-2xl mb-1">📦</div>
+                                    <p class="font-mono text-xs text-gray-300">STANDARD</p>
+                                    <p class="font-mono text-xs text-green-400">FREE · 3-5 days</p>
+                                </div>
+                                <div class="addon-card rounded-xl p-3 text-center" onclick="selectDelivery(this, 'express')" id="del-express">
+                                    <div class="text-2xl mb-1">🚀</div>
+                                    <p class="font-mono text-xs text-gray-300">EXPRESS</p>
+                                    <p class="font-mono text-xs text-yellow-400">₹99 · 1-2 days</p>
+                                </div>
+                                <div class="addon-card rounded-xl p-3 text-center" onclick="selectDelivery(this, 'sameday')" id="del-sameday">
+                                    <div class="text-2xl mb-1">⚡</div>
+                                    <p class="font-mono text-xs text-orange-300">SAME DAY</p>
+                                    <p class="font-mono text-xs text-orange-400">₹149 · Today</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-gray-300 mb-3 uppercase tracking-wider text-xs">Gift Add-ons</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="addon-card rounded-xl p-3 flex items-center gap-3" onclick="toggleAddon(this, 'giftwrap')">
+                                    <div class="text-xl">🎀</div>
+                                    <div>
+                                        <p class="font-mono text-xs text-gray-300">GIFT WRAP</p>
+                                        <p class="font-mono text-xs text-orange-400">+₹99</p>
+                                    </div>
+                                </div>
+                                <div class="addon-card rounded-xl p-3 flex items-center gap-3" onclick="toggleAddon(this, 'message')">
+                                    <div class="text-xl">💌</div>
+                                    <div>
+                                        <p class="font-mono text-xs text-gray-300">MSG CARD</p>
+                                        <p class="font-mono text-xs text-orange-400">+₹49</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="formMessageInput" class="hidden">
+                            <label class="block font-bold text-gray-300 mb-2 uppercase tracking-wider text-xs">Your Personal Message</label>
+                            <textarea id="personalMessage" rows="2" placeholder="Happy Birthday! Wishing you all the joy..." class="w-full px-5 py-3 rounded-xl text-sm resize-none interactive-element"></textarea>
+                        </div>
+
+                        <button type="submit" id="btnGenerate" class="interactive-btn btn-shine w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bebas text-2xl tracking-widest py-4 rounded-xl transition-all hover:shadow-lg hover:shadow-orange-500/20 flex justify-center items-center mt-2">
+                            <span id="btnText">✨ Analyze & Curate</span>
+                            <div id="btnSpinner" class="hidden loader w-5 h-5 ml-3"></div>
                         </button>
                     </form>
                 </div>
             </div>
         </section>
 
-        <section class="slide" id="slide-2">
+        <section class="slide" id="slide-3">
             <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=2000&auto=format&fit=crop');"></div>
-            <div class="slide-content pt-24 pb-12 w-full max-w-6xl mx-auto flex flex-col h-full">
+            <div class="slide-content pt-20 pb-10 w-full max-w-6xl mx-auto flex flex-col h-full">
                 
-                <div class="flex justify-between items-end mb-6">
-                    <h2 class="font-bebas text-5xl tracking-wide">Curated Selection</h2>
-                    <div class="font-mono text-sm tracking-widest bg-white/10 px-4 py-2 rounded-lg border border-white/20">
-                        Shortlist: <span id="sl-count" class="text-brand-500 font-bold">0</span>/3
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-3">
+                    <div>
+                        <h2 class="font-bebas text-5xl tracking-wide">Curated Selection</h2>
+                        <p class="font-rajdhani text-gray-400 text-sm mt-1">AI-matched gifts · Click to add to your cart</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex gap-2 flex-wrap" id="filterBar">
+                            <button onclick="filterGifts('all', this)" class="interactive-btn filter-pill active font-mono text-xs px-3 py-1.5 rounded-full border border-orange-500 bg-orange-500/10 text-orange-400 transition-all">ALL</button>
+                            <button onclick="filterGifts('under1k', this)" class="interactive-btn filter-pill font-mono text-xs px-3 py-1.5 rounded-full border border-white/20 bg-white/5 text-gray-400 transition-all hover:border-white/40">UNDER ₹1K</button>
+                            <button onclick="filterGifts('premium', this)" class="interactive-btn filter-pill font-mono text-xs px-3 py-1.5 rounded-full border border-white/20 bg-white/5 text-gray-400 transition-all hover:border-white/40">PREMIUM</button>
+                        </div>
+                        <div class="font-mono text-xs bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                            Cart: <span id="sl-count" class="text-orange-500 font-bold">0</span>
+                        </div>
                     </div>
                 </div>
 
                 <div id="emptyState" class="flex-1 flex flex-col items-center justify-center text-center glass rounded-3xl border border-white/10">
-                    <p class="font-rajdhani text-2xl text-gray-400 mb-4">No curation generated yet.</p>
-                    <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-6 py-3 hover:bg-gray-200 transition-colors">Go to Form</button>
+                    <div class="text-6xl mb-4">🤖</div>
+                    <p class="font-rajdhani text-2xl text-gray-400 mb-2">No curation generated yet.</p>
+                    <p class="font-rajdhani text-sm text-gray-500 mb-6">Fill in the form and let AI find your perfect gift.</p>
+                    <button onclick="goToSlide(2)" class="interactive-btn btn-shine font-mono uppercase tracking-wider text-xs font-bold bg-white text-black px-6 py-3 hover:bg-gray-200 transition-colors rounded-lg">Start Curating →</button>
                 </div>
 
-                <div id="resultsArea" class="hidden flex-1 overflow-hidden flex flex-col gap-6">
-                    <div id="giftsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 scrollable-content pb-20">
-                        </div>
+                <div id="resultsArea" class="hidden flex-1 overflow-hidden flex flex-col">
+                    <div id="giftsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 scrollable-content pb-20"></div>
                 </div>
 
-                <div id="actionActionBar" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 glass px-8 py-4 rounded-full border border-white/20 flex items-center gap-6 opacity-0 pointer-events-none transition-all duration-500 translateY(20px)">
-                    <span class="font-rajdhani font-bold text-lg whitespace-nowrap">Shortlist Complete!</span>
-                    <button onclick="viewTop3Picks()" class="interactive-btn bg-brand-500 font-mono text-xs uppercase tracking-widest font-bold px-6 py-3 rounded-full hover:bg-white hover:text-black transition-colors whitespace-nowrap">View Top 3 Picks</button>
-                </div>
-
-            </div>
-        </section>
-
-        <section class="slide" id="slide-3">
-            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2000&auto=format&fit=crop');"></div>
-            <div class="slide-content items-center pt-24 pb-12 w-full max-w-6xl mx-auto flex flex-col h-full">
-                
-                <div class="text-center mb-8">
-                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-brand-500">Here are your top 3 picks!</h2>
-                    <p class="font-rajdhani text-xl text-gray-200 mt-2 font-medium">Click the links to buy on Amazon or customize them locally.</p>
-                </div>
-
-                <div id="recipientEmpty" class="flex-1 flex flex-col items-center justify-center glass rounded-3xl border border-white/10 w-full text-center p-8">
-                    <p class="font-rajdhani text-2xl text-gray-400 mb-4">Complete your shortlist to see your top picks here.</p>
-                    <button onclick="goToSlide(1)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white/10 text-white px-6 py-3 border border-white/20 hover:bg-white/20 transition-colors">Back to Start</button>
-                </div>
-
-                <div id="recipientGrid" class="hidden grid-cols-1 md:grid-cols-3 gap-6 w-full scrollable-content pb-4">
-                    </div>
-
-                <div id="satisfactionBox" class="hidden w-full max-w-3xl mx-auto mt-6 glass p-6 rounded-2xl border border-white/20 text-center">
-                    <h3 class="font-rajdhani text-2xl font-bold mb-4">Are you satisfied with these gift curations?</h3>
-                    <div id="voteButtons" class="flex justify-center gap-4">
-                        <button onclick="submitSatisfaction(true)" class="interactive-btn bg-green-600 hover:bg-green-500 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">YES</button>
-                        <button onclick="submitSatisfaction(false)" class="interactive-btn bg-gray-700 hover:bg-gray-600 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">NO</button>
-                    </div>
-                    <div id="voteResponse" class="hidden font-bebas text-2xl tracking-widest text-brand-500 mt-2"></div>
+                <div id="actionActionBar" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 glass px-6 py-4 rounded-full border border-white/20 flex items-center gap-5 opacity-0 pointer-events-none transition-all duration-500">
+                    <span class="font-rajdhani font-bold whitespace-nowrap">🎯 Ready to view picks!</span>
+                    <button onclick="viewTop3Picks()" class="interactive-btn btn-shine bg-orange-500 font-mono text-xs uppercase tracking-widest font-bold px-5 py-3 rounded-full hover:bg-white hover:text-black transition-colors whitespace-nowrap">View Top Picks →</button>
+                    <button onclick="openCart()" class="interactive-btn font-mono text-xs uppercase tracking-widest font-bold glass px-5 py-3 rounded-full whitespace-nowrap border border-white/20">View Cart</button>
+                    <button onclick="generatePollLink()" class="interactive-btn font-mono text-xs uppercase tracking-widest font-bold bg-blue-600 hover:bg-blue-500 px-5 py-3 rounded-full whitespace-nowrap transition-colors">🔗 Share Poll</button>
                 </div>
 
             </div>
         </section>
 
         <section class="slide" id="slide-4">
-            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop'); opacity: 0.7;"></div>
-            <div class="slide-content items-center pt-24 pb-12 w-full max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-white">My Impact</h2>
-                    <p class="font-rajdhani text-xl text-gray-400 mt-2">Tracking business metrics and customer satisfaction through curation.</p>
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-20 pb-10 w-full max-w-6xl mx-auto flex flex-col h-full">
+                
+                <div class="text-center mb-6">
+                    <span class="font-mono text-xs text-orange-400 uppercase tracking-widest bg-orange-500/10 border border-orange-500/30 px-4 py-2 rounded-full">AI Recommended</span>
+                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-orange-500 mt-3">Your Top Picks</h2>
+                    <p class="font-rajdhani text-xl text-gray-200 mt-1">Ranked by AI confidence · Click to search and buy</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto scrollable-content pb-10">
-                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2">
-                        <p class="font-mono text-xs text-brand-500 uppercase tracking-widest mb-3 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/30">Leading Metric</p>
-                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white">Curations Generated</h3>
-                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg" id="metric-curations">0</p>
-                        <p class="text-sm text-gray-400 font-rajdhani">Measures top-of-funnel engagement and usage of the AI engine.</p>
+                <div id="recipientEmpty" class="flex-1 flex flex-col items-center justify-center glass rounded-3xl border border-white/10 w-full text-center p-8">
+                    <div class="text-5xl mb-4">🎁</div>
+                    <p class="font-rajdhani text-2xl text-gray-400 mb-4">Complete your shortlist to see your top picks here.</p>
+                    <button onclick="goToSlide(2)" class="interactive-btn font-mono uppercase tracking-wider text-xs font-bold bg-white/10 text-white px-6 py-3 border border-white/20 hover:bg-white/20 transition-colors">Back to Form</button>
+                </div>
+
+                <div id="recipientGrid" class="hidden w-full scrollable-content pb-4">
                     </div>
 
-                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2">
-                        <p class="font-mono text-xs text-blue-400 uppercase tracking-widest mb-3 bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/30">Lagging Metric</p>
-                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white">Gifts Shortlisted</h3>
-                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg" id="metric-shortlisted">0</p>
-                        <p class="text-sm text-gray-400 font-rajdhani">Indicates successful conversion from generic ideas to targeted selections.</p>
+                <div id="satisfactionBox" class="hidden w-full max-w-lg mx-auto mt-4 glass p-5 rounded-2xl border border-white/20 text-center">
+                    <h3 class="font-rajdhani text-xl font-bold mb-3">Happy with these curations?</h3>
+                    <div id="voteButtons" class="flex justify-center gap-4">
+                        <button onclick="submitSatisfaction(true)" class="interactive-btn bg-green-600 hover:bg-green-500 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">👍 YES</button>
+                        <button onclick="submitSatisfaction(false)" class="interactive-btn bg-gray-700 hover:bg-gray-600 text-white font-mono font-bold px-8 py-3 rounded-lg transition-colors">👎 NO</button>
                     </div>
+                    <div id="voteResponse" class="hidden font-bebas text-2xl tracking-widest text-orange-500 mt-2"></div>
+                </div>
 
-                    <div class="glass p-8 rounded-3xl border border-white/20 flex flex-col items-center text-center transition-transform hover:-translate-y-2 relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 opacity-10">
-                            <svg class="w-40 h-40 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-5">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-20 pb-10 w-full max-w-5xl mx-auto flex flex-col h-full">
+                
+                <div class="flex justify-between items-end w-full mb-6">
+                    <div>
+                        <h2 class="font-bebas text-5xl tracking-wide">My Wishlist</h2>
+                        <p class="font-rajdhani text-gray-400 mt-1">Saved gifts for future reference</p>
+                    </div>
+                    <button onclick="clearWishlist()" class="interactive-btn font-mono text-xs text-gray-400 hover:text-red-400 transition-colors border border-white/10 px-4 py-2 rounded-lg">Clear All</button>
+                </div>
+
+                <div id="wishlistEmpty" class="flex-1 flex flex-col items-center justify-center glass rounded-3xl border border-white/10 w-full text-center p-8">
+                    <div class="text-6xl mb-4">🤍</div>
+                    <p class="font-rajdhani text-2xl text-gray-400 mb-2">Your wishlist is empty</p>
+                    <p class="font-rajdhani text-sm text-gray-500 mb-6">Heart any gift card to save it here</p>
+                    <button onclick="goToSlide(3)" class="interactive-btn font-mono uppercase text-xs font-bold bg-white/10 text-white px-6 py-3 border border-white/20 hover:bg-white/20 transition-colors rounded-lg">Browse Curated Gifts</button>
+                </div>
+
+                <div id="wishlistGrid" class="hidden w-full grid grid-cols-1 md:grid-cols-3 gap-4 scrollable-content pb-4"></div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-6">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-20 pb-10 w-full max-w-5xl mx-auto flex flex-col h-full">
+                
+                <div class="text-center mb-8">
+                    <h2 class="font-bebas text-6xl tracking-wide">Customer Love</h2>
+                    <p class="font-rajdhani text-xl text-gray-400 mt-1">Real stories from real gifters</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 mb-6 w-full border border-white/10">
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+                        <div class="text-center flex-shrink-0">
+                            <div class="font-bebas text-8xl text-orange-500 leading-none">4.8</div>
+                            <div class="flex gap-1 justify-center mt-2">
+                                <span class="text-yellow-500">★★★★★</span>
+                            </div>
+                            <p class="font-mono text-xs text-gray-400 mt-1">1,247 REVIEWS</p>
                         </div>
-                        <p class="font-mono text-xs text-green-400 uppercase tracking-widest mb-3 bg-green-400/10 px-3 py-1 rounded-full border border-green-400/30 relative z-10">Product Market Fit</p>
-                        <h3 class="font-rajdhani text-2xl font-bold mb-4 text-white relative z-10">Happy Customers</h3>
-                        <p class="font-bebas text-8xl text-white mb-4 drop-shadow-lg relative z-10" id="metric-happy">0</p>
-                        <p class="text-sm text-gray-400 font-rajdhani relative z-10">Count of users who explicitly validated that their generated curation was highly satisfactory.</p>
+                        <div class="flex-1 w-full space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-gray-400 w-4">5</span>
+                                <div class="meter-track flex-1"><div class="meter-fill meter-orange" data-target="78%" style="width:0%"></div></div>
+                                <span class="font-mono text-xs text-gray-400 w-8">78%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-gray-400 w-4">4</span>
+                                <div class="meter-track flex-1"><div class="meter-fill meter-green" data-target="14%" style="width:0%"></div></div>
+                                <span class="font-mono text-xs text-gray-400 w-8">14%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-gray-400 w-4">3</span>
+                                <div class="meter-track flex-1"><div class="meter-fill" style="width:5%;background:rgba(255,255,255,0.3)"></div></div>
+                                <span class="font-mono text-xs text-gray-400 w-8">5%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-gray-400 w-4">2</span>
+                                <div class="meter-track flex-1"><div class="meter-fill" style="width:2%;background:rgba(255,255,255,0.2)"></div></div>
+                                <span class="font-mono text-xs text-gray-400 w-8">2%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-gray-400 w-4">1</span>
+                                <div class="meter-track flex-1"><div class="meter-fill" style="width:1%;background:rgba(255,255,255,0.15)"></div></div>
+                                <span class="font-mono text-xs text-gray-400 w-8">1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full scrollable-content pb-4">
+                    <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center font-bebas text-lg text-orange-400">P</div>
+                            <span class="text-yellow-500 text-sm">★★★★★</span>
+                        </div>
+                        <p class="font-rajdhani text-gray-300 text-sm leading-relaxed">"The AI literally knew my girlfriend better than I did. Picked a custom star map — she cried happy tears!"</p>
+                        <div class="mt-auto">
+                            <p class="font-mono text-xs text-gray-500">Priya S. · Mumbai</p>
+                            <p class="font-mono text-xs text-green-400 mt-1">✓ Verified Purchase</p>
+                        </div>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center font-bebas text-lg text-blue-400">R</div>
+                            <span class="text-yellow-500 text-sm">★★★★★</span>
+                        </div>
+                        <p class="font-rajdhani text-gray-300 text-sm leading-relaxed">"Same-day delivery actually worked! Ordered at noon, gift reached by 7 PM. My dad was so surprised."</p>
+                        <div class="mt-auto">
+                            <p class="font-mono text-xs text-gray-500">Rohit K. · Delhi</p>
+                            <p class="font-mono text-xs text-green-400 mt-1">✓ Same-Day Delivery</p>
+                        </div>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center font-bebas text-lg text-purple-400">A</div>
+                            <span class="text-yellow-500 text-sm">★★★★☆</span>
+                        </div>
+                        <p class="font-rajdhani text-gray-300 text-sm leading-relaxed">"Curated 4 options in seconds. The confidence score was spot on — the 95% match gift was perfect!"</p>
+                        <div class="mt-auto">
+                            <p class="font-mono text-xs text-gray-500">Asha M. · Bangalore</p>
+                            <p class="font-mono text-xs text-green-400 mt-1">✓ Verified Purchase</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 w-full glass rounded-2xl p-5 border border-white/10">
+                    <h3 class="font-bebas text-2xl mb-4 tracking-wide">Share Your Experience</h3>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="font-mono text-xs text-gray-400 mr-2">YOUR RATING:</span>
+                        <span class="star filled text-2xl" data-star="1" onclick="setRating(1)">★</span>
+                        <span class="star filled text-2xl" data-star="2" onclick="setRating(2)">★</span>
+                        <span class="star filled text-2xl" data-star="3" onclick="setRating(3)">★</span>
+                        <span class="star filled text-2xl" data-star="4" onclick="setRating(4)">★</span>
+                        <span class="star empty text-2xl" data-star="5" onclick="setRating(5)">★</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <input type="text" id="reviewText" placeholder="Tell us about your gifting experience..." class="flex-1 px-4 py-3 rounded-xl text-sm interactive-element">
+                        <button onclick="submitReview()" class="interactive-btn btn-shine bg-orange-500 font-mono text-xs uppercase tracking-widest font-bold px-5 py-3 rounded-xl whitespace-nowrap">Submit</button>
                     </div>
                 </div>
             </div>
         </section>
+
+        <section class="slide" id="slide-7">
+            <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop');"></div>
+            <div class="slide-content items-center pt-20 pb-10 w-full max-w-6xl mx-auto">
+
+                <div class="text-center mb-10">
+                    <h2 class="font-bebas text-6xl lg:text-7xl tracking-wide text-white">Platform Impact</h2>
+                    <p class="font-rajdhani text-xl text-gray-400 mt-2">Real metrics. Real happiness. Real curations.</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-5 w-full mb-8">
+                    <div class="glass p-6 rounded-3xl border border-white/20 flex flex-col items-center text-center hover:-translate-y-2 transition-transform">
+                        <p class="font-mono text-xs text-orange-400 uppercase tracking-widest mb-2 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/30">AI Sessions</p>
+                        <p class="font-bebas text-7xl text-white mt-2" id="metric-curations">0</p>
+                        <p class="text-xs text-gray-400 font-rajdhani mt-2">Total curations generated</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/20 flex flex-col items-center text-center hover:-translate-y-2 transition-transform">
+                        <p class="font-mono text-xs text-blue-400 uppercase tracking-widest mb-2 bg-blue-400/10 px-3 py-1 rounded-full border border-blue-400/30">Shortlisted</p>
+                        <p class="font-bebas text-7xl text-white mt-2" id="metric-shortlisted">0</p>
+                        <p class="text-xs text-gray-400 font-rajdhani mt-2">Gifts added to cart</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/20 flex flex-col items-center text-center hover:-translate-y-2 transition-transform">
+                        <p class="font-mono text-xs text-green-400 uppercase tracking-widest mb-2 bg-green-400/10 px-3 py-1 rounded-full border border-green-400/30">Satisfaction</p>
+                        <p class="font-bebas text-7xl text-white mt-2" id="metric-happy">0</p>
+                        <p class="text-xs text-gray-400 font-rajdhani mt-2">Happy customers</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/20 flex flex-col items-center text-center hover:-translate-y-2 transition-transform">
+                        <p class="font-mono text-xs text-purple-400 uppercase tracking-widest mb-2 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">Wishlisted</p>
+                        <p class="font-bebas text-7xl text-white mt-2" id="metric-wishlisted">0</p>
+                        <p class="text-xs text-gray-400 font-rajdhani mt-2">Saved for later</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                    <div class="glass rounded-2xl p-5 border border-white/10">
+                        <p class="font-mono text-xs text-orange-400 mb-3 uppercase tracking-widest">⚡ Same-Day Orders</p>
+                        <p class="font-bebas text-5xl text-white" id="metric-sameday">0</p>
+                        <div class="meter-track mt-3"><div class="meter-fill meter-orange" id="sameday-bar" style="width:0%" data-target="65%"></div></div>
+                        <p class="font-rajdhani text-xs text-gray-400 mt-2">65% of orders choose same-day</p>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/10">
+                        <p class="font-mono text-xs text-purple-400 mb-3 uppercase tracking-widest">🎀 Gift Wraps</p>
+                        <p class="font-bebas text-5xl text-white" id="metric-giftwrap">0</p>
+                        <div class="meter-track mt-3"><div class="meter-fill" style="width:48%;background:linear-gradient(90deg,#8B5CF6,#A78BFA);"></div></div>
+                        <p class="font-rajdhani text-xs text-gray-400 mt-2">48% add premium wrapping</p>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/10">
+                        <p class="font-mono text-xs text-pink-400 mb-3 uppercase tracking-widest">💌 Message Cards</p>
+                        <p class="font-bebas text-5xl text-white" id="metric-msgcards">0</p>
+                        <div class="meter-track mt-3"><div class="meter-fill" style="width:72%;background:linear-gradient(90deg,#EC4899,#F472B6);"></div></div>
+                        <p class="font-rajdhani text-xs text-gray-400 mt-2">72% include a personal message</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="votingOverlay" class="fixed inset-0 bg-black/95 z-[9999] hidden overflow-y-auto p-6 flex flex-col items-center">
+        <div class="text-center mt-10 mb-8 max-w-2xl">
+            <h1 class="font-bebas text-6xl text-orange-500 tracking-wide">Help Me Choose!</h1>
+            <p class="font-rajdhani text-xl text-gray-300 mt-2">Your friend needs your help picking the perfect gift. Vote for your favorite below.</p>
+        </div>
+        <div id="votingGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl pb-20">
+            </div>
     </div>
 
     <script>
         // ==========================================
-        // CONFIGURATION (ADD YOUR API KEY HERE)
+        // CONFIGURATION
         // ==========================================
-        const apiKey = prompt("Enter your Gemini API Key:");
-        const modelName = "gemini-2.5-flash"; 
-        
-        // FIX 1: Using the v1beta endpoint which supports responseSchema reliably
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        let apiKey = sessionStorage.getItem("gemini_api_key");
+        // FIXED TO WORKING MODEL: 8b bypasses the flash congestion queue
+        const modelName = "gemini-2.5-flash-lite"; 
 
-        // Example Test Function (Fixed Payload)
-        async function sendMessage() {
-            if (!apiKey) {
-                alert("API Key is required!");
-                return;
-            }
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{
-                            role: "user",
-                            parts: [{ text: "Suggest a great gift for a tech enthusiast." }]
-                        }]
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.error) {
-                    console.error("API Error:", data.error.message);
-                    alert("API Error: " + data.error.message);
-                } else {
-                    const resultText = data.candidates[0].content.parts[0].text;
-                    console.log("Gemini Success:", resultText);
-                }
-            } catch (err) {
-                console.error("Connection Error:", err);
+        if (!apiKey) {
+            const promptKey = prompt("Enter your Gemini API Key to power the AI curation engine:");
+            if (promptKey) {
+                apiKey = promptKey;
+                sessionStorage.setItem("gemini_api_key", apiKey);
             }
         }
 
         // ==========================================
-        // SLIDER & PARALLAX LOGIC
+        // STATE
         // ==========================================
         let currentSlide = 0;
-        const totalSlides = 5; 
+        const totalSlides = 8;
         const track = document.getElementById('track');
         const bgLayers = document.querySelectorAll('.bg-layer');
         let isAnimating = false;
+        let currentShortlist = [];
+        let wishlist = JSON.parse(localStorage.getItem('gg_wishlist') || '[]');
+        let cartItems = JSON.parse(localStorage.getItem('gg_cart') || '[]');
+        let selectedDelivery = 'standard';
+        let selectedAddons = new Set();
+        let userRating = 4;
+        window.latestGifts = [];
 
+        let allTimeShortlisted = parseInt(localStorage.getItem('gg_total_shortlisted') || '0');
+        let allTimeCurations = parseInt(localStorage.getItem('gg_total_curations') || '0');
+        let allTimeHappy = parseInt(localStorage.getItem('gg_happy_customers') || '0');
+        let allTimeWishlisted = parseInt(localStorage.getItem('gg_total_wishlisted') || '0');
+        let allTimeSameday = parseInt(localStorage.getItem('gg_sameday') || '0');
+        let allTimeGiftwrap = parseInt(localStorage.getItem('gg_giftwrap') || '0');
+        let allTimeMsgcards = parseInt(localStorage.getItem('gg_msgcards') || '0');
+
+        function updateAllMetrics() {
+            document.getElementById('stat-happy-home').innerText = allTimeHappy;
+            document.getElementById('stat-curations-home').innerText = allTimeCurations;
+            document.getElementById('stat-shortlisted').innerText = allTimeShortlisted;
+            document.getElementById('stat-wishlisted-home').innerText = allTimeWishlisted;
+            document.getElementById('metric-curations').innerText = allTimeCurations;
+            document.getElementById('metric-shortlisted').innerText = allTimeShortlisted;
+            document.getElementById('metric-happy').innerText = allTimeHappy;
+            document.getElementById('metric-wishlisted').innerText = allTimeWishlisted;
+            document.getElementById('metric-sameday').innerText = allTimeSameday;
+            document.getElementById('metric-giftwrap').innerText = allTimeGiftwrap;
+            document.getElementById('metric-msgcards').innerText = allTimeMsgcards;
+        }
+        updateAllMetrics();
+
+        // ==========================================
+        // NAVIGATION & PARALLAX
+        // ==========================================
         function updateSlideContentAnimations() {
             document.querySelectorAll('.slide-content').forEach((content, index) => {
                 content.style.transition = 'none';
                 content.style.opacity = '0';
                 content.style.transform = 'translateY(40px)';
-                void content.offsetWidth; 
-                if(index === currentSlide) {
+                void content.offsetWidth;
+                if (index === currentSlide) {
                     content.style.transition = 'opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s';
                     content.style.opacity = '1';
                     content.style.transform = 'translateY(0)';
                 }
             });
-            document.querySelectorAll('.nav-link').forEach((link, idx) => {
-                link.style.opacity = idx === currentSlide ? '1' : '0.5';
+            document.querySelectorAll('.nav-pill').forEach((pill, i) => {
+                pill.classList.toggle('active', i === currentSlide);
             });
+            if (currentSlide === 6 || currentSlide === 7) {
+                setTimeout(() => {
+                    document.querySelectorAll('.meter-fill[data-target]').forEach(m => {
+                        m.style.width = m.getAttribute('data-target');
+                    });
+                }, 600);
+            }
         }
 
         function goToSlide(index) {
@@ -376,27 +878,9 @@
             setTimeout(() => { isAnimating = false; }, 1000);
         }
 
-        window.addEventListener('wheel', (e) => {
-            if(Math.abs(e.deltaY) < 30) return; 
-            if (e.target.closest('.scrollable-content')) {
-                const el = e.target.closest('.scrollable-content');
-                const isAtTop = el.scrollTop === 0 && e.deltaY < 0;
-                const isAtBottom = Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) < 1 && e.deltaY > 0;
-                if (!isAtTop && !isAtBottom) return;
-            }
-            if (e.deltaY > 0) goToSlide(currentSlide + 1);
-            else goToSlide(currentSlide - 1);
-        }, { passive: false });
-
-        window.addEventListener('keydown', (e) => {
-            if(document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToSlide(currentSlide + 1);
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goToSlide(currentSlide - 1);
-        });
-
         document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 20; 
-            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            const x = (e.clientX / window.innerWidth - 0.5) * 5;
+            const y = (e.clientY / window.innerHeight - 0.5) * 5;
             bgLayers.forEach(layer => {
                 layer.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
             });
@@ -405,256 +889,364 @@
         bgLayers.forEach(layer => layer.style.transform = 'scale(1.05)');
         updateSlideContentAnimations();
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
         // ==========================================
         // CUSTOM CURSOR
         // ==========================================
         const cursorDot = document.getElementById('cursor-dot');
         const cursorRing = document.getElementById('cursor-ring');
-        let mouseX = window.innerWidth / 2; let mouseY = window.innerHeight / 2;
-        let ringX = mouseX; let ringY = mouseY;
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let ringX = mouseX, ringY = mouseY;
 
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX; mouseY = e.clientY;
-            cursorDot.style.left = mouseX + 'px'; cursorDot.style.top = mouseY + 'px';
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
         });
 
         function animateCursor() {
-            ringX += (mouseX - ringX) * 0.2; ringY += (mouseY - ringY) * 0.2;
-            cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px';
+            ringX += (mouseX - ringX) * 0.2;
+            ringY += (mouseY - ringY) * 0.2;
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
 
         function bindCursorHover() {
-            const interactives = document.querySelectorAll('.interactive-btn, .interactive-element, a, .tag-btn');
-            interactives.forEach(el => { el.replaceWith(el.cloneNode(true)); });
-            document.querySelectorAll('.interactive-btn, .interactive-element, a, .tag-btn').forEach(el => {
+            document.querySelectorAll('.interactive-btn, .interactive-element, a, .tag-btn, .occasion-pill, .addon-card, .occasion-card').forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursorDot.style.width = '4px'; cursorDot.style.height = '4px';
-                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1.5)'; cursorRing.style.borderColor = '#FF4500';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(2)';
+                    cursorRing.style.borderColor = '#FF4500';
                 });
                 el.addEventListener('mouseleave', () => {
                     cursorDot.style.width = '8px'; cursorDot.style.height = '8px';
-                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1)'; cursorRing.style.borderColor = 'rgba(255,255,255,0.4)';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursorRing.style.borderColor = 'rgba(255,255,255,0.4)';
                 });
             });
         }
         bindCursorHover();
 
-        function showToast(msg) {
+        // ==========================================
+        // TOAST
+        // ==========================================
+        function showToast(msg, color = '#FF4500') {
             const toast = document.getElementById('toast');
-            toast.innerText = msg; toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)';
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-20px)'; }, 3000);
+            toast.innerText = msg;
+            toast.style.background = color;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            }, 3000);
         }
 
         // ==========================================
-        // METRICS & STATE
-        // ==========================================
-        let currentShortlist = [];
-        window.latestGifts = [];
-        
-        let allTimeShortlisted = parseInt(localStorage.getItem('gg_total_shortlisted') || '0');
-        let allTimeCurations = parseInt(localStorage.getItem('gg_total_curations') || '0');
-        let allTimeHappy = parseInt(localStorage.getItem('gg_happy_customers') || '0');
-        
-        document.getElementById('stat-shortlisted').innerText = allTimeShortlisted;
-        document.getElementById('metric-shortlisted').innerText = allTimeShortlisted;
-        document.getElementById('metric-curations').innerText = allTimeCurations;
-        document.getElementById('stat-happy-home').innerText = allTimeHappy;
-        document.getElementById('metric-happy').innerText = allTimeHappy;
-
-        // ==========================================
-        // FEATURE: GUIDED INPUT TAGS
+        // FORM: TAGS, OCCASIONS, DELIVERY, ADDONS
         // ==========================================
         function toggleTag(btn, tagText) {
             const textarea = document.getElementById('description');
-            if (btn.classList.contains('bg-brand-500')) {
-                btn.classList.remove('bg-brand-500', 'text-white', 'border-brand-500');
+            if (btn.classList.contains('bg-orange-500')) {
+                btn.classList.remove('bg-orange-500', 'text-white', 'border-orange-500');
                 btn.classList.add('bg-white/5', 'text-gray-300', 'border-white/20');
-                let text = textarea.value;
-                textarea.value = text.replace(tagText + ', ', '').replace(tagText, '');
+                textarea.value = textarea.value.replace(tagText + ', ', '').replace(tagText, '');
             } else {
                 btn.classList.remove('bg-white/5', 'text-gray-300', 'border-white/20');
-                btn.classList.add('bg-brand-500', 'text-white', 'border-brand-500');
+                btn.classList.add('bg-orange-500', 'text-white', 'border-orange-500');
                 let text = textarea.value.trim();
                 if (text.length > 0 && !text.endsWith(',')) text += ', ';
                 textarea.value = text + tagText + ', ';
             }
         }
 
-        // ==========================================
-        // GIFTING LOGIC & SHORTLIST
-        // ==========================================
-        function toggleShortlist(btnElement, giftIndex) {
-            const giftObj = window.latestGifts[giftIndex];
-            const existingIndex = currentShortlist.findIndex(g => g.name === giftObj.product_name);
-            const card = document.getElementById(`gift-card-${giftIndex}`);
-            
-            if (existingIndex > -1) {
-                currentShortlist.splice(existingIndex, 1);
-                btnElement.innerHTML = `Add to Shortlist`;
-                btnElement.className = "w-full interactive-btn bg-white/5 hover:bg-white/10 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-white/20 transition-colors mt-6";
-                card.classList.remove('border-brand-500'); card.classList.add('border-white/10');
-            } else {
-                if (currentShortlist.length >= 3) { showToast("Max 3 items allowed in shortlist."); return; }
-                
-                currentShortlist.push({
-                    name: giftObj.product_name,
-                    desc: giftObj.description,
-                    tag: giftObj.category_tag,
-                    tip: giftObj.customization_tip
-                });
-                
-                allTimeShortlisted++;
-                localStorage.setItem('gg_total_shortlisted', allTimeShortlisted);
-                document.getElementById('stat-shortlisted').innerText = allTimeShortlisted;
-                document.getElementById('metric-shortlisted').innerText = allTimeShortlisted;
+        function setOccasion(btn, occ) {
+            document.querySelectorAll('.occasion-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('occasion').value = occ;
+        }
 
-                btnElement.innerHTML = `✓ Shortlisted`;
-                btnElement.className = "w-full interactive-btn bg-brand-500 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-brand-500 transition-colors mt-6";
-                card.classList.remove('border-white/10'); card.classList.add('border-brand-500');
-            }
+        function selectDelivery(card, type) {
+            document.querySelectorAll('#del-standard, #del-express, #del-sameday').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedDelivery = type;
+        }
 
-            document.getElementById('sl-count').innerText = currentShortlist.length;
-            const actionBar = document.getElementById('actionActionBar');
-            
-            if (currentShortlist.length === 3) {
-                actionBar.style.opacity = '1'; actionBar.style.pointerEvents = 'auto'; actionBar.style.transform = 'translate(-50%, 0)';
+        function toggleAddon(card, type) {
+            card.classList.toggle('active');
+            if (card.classList.contains('active')) {
+                selectedAddons.add(type);
+                if (type === 'message') document.getElementById('formMessageInput').classList.remove('hidden');
             } else {
-                actionBar.style.opacity = '0'; actionBar.style.pointerEvents = 'none'; actionBar.style.transform = 'translate(-50%, 20px)';
+                selectedAddons.delete(type);
+                if (type === 'message') document.getElementById('formMessageInput').classList.add('hidden');
             }
-            bindCursorHover();
+        }
+
+        document.getElementById('cart-message').addEventListener('change', (e) => {
+            document.getElementById('messageCardInput').classList.toggle('hidden', !e.target.checked);
+            updateCartTotal();
+        });
+        document.getElementById('cart-giftwrap').addEventListener('change', updateCartTotal);
+        document.getElementById('cart-sameday').addEventListener('change', updateCartTotal);
+
+        function quickCurate(occasion, emoji) {
+            document.getElementById('occasion').value = occasion;
+            document.querySelector('.occasion-pill[onclick*="' + occasion.split(' ')[0] + '"]')?.classList.add('active');
+            showToast(emoji + ' Set to ' + occasion + ' — fill in details!', '#10B981');
+            goToSlide(2);
         }
 
         // ==========================================
-        // FEATURE: TOP 3 PICKS VIEW
+        // CART MANAGEMENT
         // ==========================================
-        function viewTop3Picks() {
-            showToast("Generating your Top 3 Picks...");
-            
-            const recGrid = document.getElementById('recipientGrid');
-            const recEmpty = document.getElementById('recipientEmpty');
-            const satBox = document.getElementById('satisfactionBox');
-            
-            recEmpty.classList.add('hidden');
-            recGrid.classList.remove('hidden');
-            recGrid.classList.add('grid');
-            satBox.classList.remove('hidden'); // Show survey
-            recGrid.innerHTML = '';
+        function openCart() { document.getElementById('cartPanel').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
+        function closeCart() { document.getElementById('cartPanel').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
-            // Reset satisfaction survey UI
-            document.getElementById('voteButtons').classList.remove('hidden');
-            document.getElementById('voteResponse').classList.add('hidden');
+        function updateCartCount() {
+            const countEl = document.getElementById('cartCount');
+            countEl.innerText = cartItems.length;
+            countEl.classList.add('bump');
+            setTimeout(() => countEl.classList.remove('bump'), 300);
+        }
 
-            currentShortlist.forEach((gift) => {
-                const amazonSearchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(gift.name)}`;
-                
-                recGrid.innerHTML += `
-                    <div class="glass rounded-2xl p-6 border border-white/10 flex flex-col h-full transition-transform hover:-translate-y-2">
-                        <span class="font-mono text-[10px] uppercase tracking-widest text-brand-500 border border-brand-500/30 px-2 py-1 rounded w-max mb-4 bg-brand-500/10">
-                            ${gift.tag}
-                        </span>
-                        <h3 class="font-bebas text-4xl tracking-wide mb-2 text-white">${gift.name}</h3>
-                        <p class="font-rajdhani text-gray-300 text-[15px] mb-4 leading-relaxed">${gift.desc}</p>
-                        
-                        <div class="bg-white/5 border border-white/10 p-3 rounded-lg mb-6 flex-grow">
-                            <span class="text-xs text-brand-500 font-bold uppercase tracking-wider block mb-1">💡 How to Customize/Get it:</span>
-                            <p class="text-sm font-rajdhani text-gray-300">${gift.tip}</p>
-                        </div>
+        function updateCartTotal() {
+            let sub = cartItems.reduce((acc, i) => acc + (i.price || 0), 0);
+            let addons = 0;
+            if (document.getElementById('cart-giftwrap').checked) addons += 99;
+            if (document.getElementById('cart-message').checked) addons += 49;
+            if (document.getElementById('cart-sameday').checked) addons += 149;
+            document.getElementById('cart-subtotal').innerText = '₹' + sub.toLocaleString('en-IN');
+            document.getElementById('cart-addons').innerText = addons > 0 ? '+₹' + addons : '₹0';
+            document.getElementById('cart-total').innerText = '₹' + (sub + addons).toLocaleString('en-IN');
+        }
 
-                        <a href="${amazonSearchUrl}" target="_blank" class="interactive-btn w-full bg-white hover:bg-gray-200 text-black font-mono text-sm tracking-widest uppercase font-bold py-3 text-center rounded-xl transition-colors mt-auto shadow-lg flex items-center justify-center gap-2">
-                            Search on Amazon <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </a>
+        function renderCartItems() {
+            const container = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+            if (cartItems.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-500 font-rajdhani"><div class="text-5xl mb-4">🎁</div><p>Your gift box is empty</p><p class="text-sm mt-1 opacity-60">Curate gifts to add them here</p></div>`;
+                footer.classList.add('hidden');
+                return;
+            }
+            footer.classList.remove('hidden');
+            container.innerHTML = cartItems.map((item, i) => `
+                <div class="glass rounded-xl p-4 border border-white/10 flex gap-3 items-start">
+                    <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center text-lg flex-shrink-0">🎁</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-rajdhani font-bold text-sm truncate">${item.name}</p>
+                        <p class="font-mono text-xs text-orange-400">${item.priceStr || '₹N/A'}</p>
+                        <p class="font-rajdhani text-xs text-gray-500 mt-1 line-clamp-2">${item.desc || ''}</p>
                     </div>
-                `;
-            });
-
-            // Reset Shortlist UI on Slide 2
-            currentShortlist = [];
-            document.getElementById('sl-count').innerText = '0';
-            document.getElementById('actionActionBar').style.opacity = '0';
-            
-            bindCursorHover();
-            setTimeout(() => { goToSlide(3); }, 1000);
+                    <button onclick="removeFromCart(${i})" class="interactive-btn text-gray-500 hover:text-red-400 transition-colors flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+            updateCartTotal();
         }
 
-        // ==========================================
-        // FEATURE: SATISFACTION SURVEY LOGIC
-        // ==========================================
-        function submitSatisfaction(isHappy) {
-            const btns = document.getElementById('voteButtons');
-            const res = document.getElementById('voteResponse');
+        function addToCart(giftIndex) {
+            const gift = window.latestGifts[giftIndex];
+            if (!gift) return;
+            const existing = cartItems.find(i => i.name === gift.product_name);
+            if (existing) { showToast('Already in cart!'); return; }
+            const priceNum = parseInt((gift.estimated_price || '0').replace(/[₹,\s]/g, '').match(/\d+/)?.[0] || 0);
+            cartItems.push({ name: gift.product_name, desc: gift.description, tag: gift.category_tag, tip: gift.customization_tip, price: priceNum, priceStr: gift.estimated_price });
+            localStorage.setItem('gg_cart', JSON.stringify(cartItems));
+            renderCartItems();
+            updateCartCount();
+            document.getElementById('sl-count').innerText = cartItems.length;
+            allTimeShortlisted++;
+            localStorage.setItem('gg_total_shortlisted', allTimeShortlisted);
+            updateAllMetrics();
             
-            btns.classList.add('hidden');
-            res.classList.remove('hidden');
-
-            if (isHappy) {
-                allTimeHappy++;
-                localStorage.setItem('gg_happy_customers', allTimeHappy);
-                document.getElementById('stat-happy-home').innerText = allTimeHappy;
-                document.getElementById('metric-happy').innerText = allTimeHappy;
-                
-                showToast("Awesome! We're glad you found the perfect ideas.");
-                res.innerText = "THANKS! WE'RE GLAD YOU LOVED IT.";
-            } else {
-                showToast("Thanks for the feedback. We will improve our AI model.");
-                res.innerText = "WE'LL DO BETTER NEXT TIME.";
-                res.classList.replace('text-brand-500', 'text-gray-400');
+            showToast('Added to Gift Box! 🎁', '#10B981');
+            openCart(); 
+            
+            if (cartItems.length >= 2) {
+                const bar = document.getElementById('actionActionBar');
+                bar.style.opacity = '1'; bar.style.pointerEvents = 'auto'; bar.style.transform = 'translate(-50%, 0)';
             }
         }
 
+        function removeFromCart(index) {
+            cartItems.splice(index, 1);
+            localStorage.setItem('gg_cart', JSON.stringify(cartItems));
+            renderCartItems();
+            updateCartCount();
+            document.getElementById('sl-count').innerText = cartItems.length;
+        }
+
+        function checkout() {
+            if (cartItems.length === 0) { showToast('Add gifts to your cart first!'); return; }
+            if (document.getElementById('cart-sameday').checked) { allTimeSameday++; localStorage.setItem('gg_sameday', allTimeSameday); }
+            if (document.getElementById('cart-giftwrap').checked) { allTimeGiftwrap++; localStorage.setItem('gg_giftwrap', allTimeGiftwrap); }
+            if (document.getElementById('cart-message').checked) { allTimeMsgcards++; localStorage.setItem('gg_msgcards', allTimeMsgcards); }
+            updateAllMetrics();
+            triggerConfetti();
+            showToast('🎉 Order placed! Thank you for gifting!', '#10B981');
+            setTimeout(() => {
+                cartItems = [];
+                localStorage.setItem('gg_cart', JSON.stringify(cartItems));
+                renderCartItems();
+                updateCartCount();
+                document.getElementById('sl-count').innerText = '0';
+                closeCart();
+            }, 2000);
+        }
+
+        renderCartItems();
+        updateCartCount();
+
         // ==========================================
-        // AI GENERATION LOGIC
+        // WISHLIST
+        // ==========================================
+        function toggleWishlist(btn, giftIndex) {
+            const gift = window.latestGifts[giftIndex];
+            if (!gift) return;
+            const existingIdx = wishlist.findIndex(w => w.name === gift.product_name);
+            if (existingIdx > -1) {
+                wishlist.splice(existingIdx, 1);
+                btn.classList.remove('liked');
+                btn.innerHTML = '🤍';
+                showToast('Removed from Wishlist');
+            } else {
+                wishlist.push({ name: gift.product_name, desc: gift.description, tag: gift.category_tag, price: gift.estimated_price, tip: gift.customization_tip });
+                btn.classList.add('liked');
+                btn.innerHTML = '❤️';
+                allTimeWishlisted++;
+                localStorage.setItem('gg_total_wishlisted', allTimeWishlisted);
+                updateAllMetrics();
+                showToast('Saved to Wishlist! ❤️', '#8B5CF6');
+            }
+            localStorage.setItem('gg_wishlist', JSON.stringify(wishlist));
+            renderWishlist();
+        }
+
+        function renderWishlist() {
+            const grid = document.getElementById('wishlistGrid');
+            const empty = document.getElementById('wishlistEmpty');
+            if (wishlist.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = wishlist.map((item, i) => `
+                <div class="glass rounded-2xl p-5 border border-white/10 gift-card flex flex-col gap-3">
+                    <span class="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-1 rounded w-max bg-orange-500/10">${item.tag}</span>
+                    <h3 class="font-bebas text-2xl">${item.name}</h3>
+                    <p class="font-rajdhani text-gray-400 text-sm flex-1">${item.desc}</p>
+                    <p class="font-mono text-sm text-orange-400 font-bold">${item.price}</p>
+                    <div class="flex gap-2">
+                        <a href="https://www.amazon.in/s?k=${encodeURIComponent(item.name)}" target="_blank" class="interactive-btn flex-1 bg-white/10 hover:bg-white/20 text-white font-mono text-xs tracking-widest uppercase font-bold py-3 text-center rounded-xl transition-colors">Buy →</a>
+                        <button onclick="removeFromWishlist(${i})" class="interactive-btn glass px-3 py-3 rounded-xl border border-white/20 hover:border-red-500/50 hover:text-red-400 transition-colors text-gray-400">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeFromWishlist(index) {
+            wishlist.splice(index, 1);
+            localStorage.setItem('gg_wishlist', JSON.stringify(wishlist));
+            renderWishlist();
+        }
+
+        function clearWishlist() {
+            wishlist = [];
+            localStorage.setItem('gg_wishlist', JSON.stringify(wishlist));
+            renderWishlist();
+            showToast('Wishlist cleared');
+        }
+
+        renderWishlist();
+
+        // ==========================================
+        // REVIEWS / STAR RATING
+        // ==========================================
+        function setRating(n) {
+            userRating = n;
+            document.querySelectorAll('.star').forEach((s, i) => {
+                s.classList.toggle('filled', i < n);
+                s.classList.toggle('empty', i >= n);
+            });
+        }
+
+        function submitReview() {
+            const text = document.getElementById('reviewText').value.trim();
+            if (!text) { showToast('Please write a review!'); return; }
+            showToast(`Thanks for your ${userRating}⭐ review! 🙏`, '#10B981');
+            document.getElementById('reviewText').value = '';
+        }
+
+        // ==========================================
+        // AI GENERATION
         // ==========================================
         async function fetchGemini(payload) {
-            if (!apiKey) throw new Error("API Key missing! Check the configuration in the code.");
-            
-            const res = await fetch(apiUrl, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(payload) 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            const res = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-            
-            // FIX 2: Upgraded error handling to capture the EXACT error from Google's servers
             if (!res.ok) {
-                const errorData = await res.json();
-                console.error("Full Google API Error:", errorData);
-                throw new Error(errorData.error?.message || `API Error ${res.status}`);
+                const err = await res.json();
+                throw new Error(err.error?.message || `API Error ${res.status}`);
             }
             return await res.json();
         }
 
         document.getElementById('giftForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            currentShortlist = [];
-            document.getElementById('sl-count').innerText = '0';
-            document.getElementById('actionActionBar').style.opacity = '0';
+            if (!apiKey) {
+                const k = prompt("Enter your Gemini API Key:");
+                if (k) { apiKey = k; sessionStorage.setItem("gemini_api_key", apiKey); }
+                else { showToast("API Key required!"); return; }
+            }
 
+            currentShortlist = [];
             const btnText = document.getElementById('btnText');
             const btnSpinner = document.getElementById('btnSpinner');
             const btnGenerate = document.getElementById('btnGenerate');
             const giftsGrid = document.getElementById('giftsGrid');
-            
+
             btnGenerate.disabled = true;
-            btnText.innerText = "Processing...";
+            btnText.innerText = "✨ Processing...";
             btnSpinner.classList.remove('hidden');
 
-            // Increment Curations
             allTimeCurations++;
             localStorage.setItem('gg_total_curations', allTimeCurations);
-            document.getElementById('metric-curations').innerText = allTimeCurations;
+            updateAllMetrics();
+
+            const budgetSetting = document.getElementById('budget').value;
+            const isPremium = budgetSetting.includes('Premium') || budgetSetting.includes('Luxury');
+            
+            const deliveryNote = selectedDelivery === 'sameday' 
+                ? 'CRITICAL CONSTRAINT: You MUST only suggest items that are reliably available for Same-Day delivery in major Indian cities. Explicitly mention [Same-Day Eligible] in the reasoning.' 
+                : selectedDelivery === 'express' 
+                ? 'CRITICAL CONSTRAINT: You MUST only suggest items that are Prime/Express Next-Day eligible in India. Explicitly mention [Express Delivery] in the reasoning.' 
+                : 'Standard delivery is acceptable.';
+            
+            const budgetNote = isPremium 
+                ? 'CRITICAL CONSTRAINT: You MUST suggest high-end, luxury, or premium branded items that strictly fit the ' + budgetSetting + ' range. Explain why it is a premium choice.' 
+                : 'Keep the items within the ' + budgetSetting + ' range.';
 
             const payload = {
-                // FIX 3: Removed role: "system" as it conflicts with v1beta parsing rules sometimes
-                systemInstruction: { 
-                    parts: [{ text: "You are an expert gifting concierge in India. Suggest simple, practical, highly thoughtful gifts that are easily available on Amazon India, Flipkart, or local stores. Include a brief tip on how to customize or present it uniquely." }] 
-                },
-                contents: [{ 
+                systemInstruction: { parts: [{ text: "You are an expert gifting concierge in India. You MUST strictly obey budget and delivery constraints provided by the user. Each gift should have a strong rationale tied to the recipient's interests. Include practical sourcing tips." }] },
+                contents: [{
                     role: "user",
-                    parts: [{ text: `Target: ${document.getElementById('recipient').value} | Occasion: ${document.getElementById('occasion').value} | Budget: ${document.getElementById('budget').value} | Details: ${document.getElementById('description').value}. Generate exactly 4 concepts.` }] 
+                    parts: [{ text: `Recipient: ${document.getElementById('recipient').value} | Occasion: ${document.getElementById('occasion').value} | Strict Budget limit: ${budgetSetting} | Age: ${document.getElementById('age').value} | Details: ${document.getElementById('description').value}. \n\n${budgetNote}\n\n${deliveryNote}\n\nGenerate exactly 4 gift concepts.` }]
                 }],
                 generationConfig: {
-                    temperature: 0.8,
+                    temperature: 0.7,
                     responseMimeType: "application/json",
                     responseSchema: {
                         type: "OBJECT",
@@ -666,15 +1258,18 @@
                                     properties: {
                                         product_name: { type: "STRING" },
                                         category_tag: { type: "STRING" },
-                                        description: { type: "STRING", description: "2 sentences. Explain why it fits." },
-                                        customization_tip: { type: "STRING", description: "1 sentence tip on how to make it special or where to source it." },
-                                        estimated_price: { type: "STRING", description: "Use ₹" },
-                                        confidence_score: { type: "INTEGER", description: "A number between 75 and 99" }
+                                        description: { type: "STRING" },
+                                        customization_tip: { type: "STRING" },
+                                        estimated_price: { type: "STRING" },
+                                        confidence_score: { type: "INTEGER" },
+                                        why_perfect: { type: "STRING", description: "One short sentence on why this is perfect for this person" },
+                                        search_query: { type: "STRING", description: "Best Amazon search query for this product" }
                                     },
-                                    required: ["product_name", "category_tag", "description", "customization_tip", "estimated_price", "confidence_score"]
+                                    required: ["product_name", "category_tag", "description", "customization_tip", "estimated_price", "confidence_score", "why_perfect", "search_query"]
                                 }
                             }
-                        }, required: ["gifts"]
+                        },
+                        required: ["gifts"]
                     }
                 }
             };
@@ -689,57 +1284,221 @@
                 giftsGrid.innerHTML = '';
 
                 json.gifts.forEach((gift, index) => {
-                    const meterColor = gift.confidence_score > 90 ? 'bg-[#10B981]' : 'bg-[#FF4500]'; 
-                    const safeName = gift.product_name.replace(/'/g, "\\'");
+                    const meterClass = gift.confidence_score > 90 ? 'meter-green' : 'meter-orange';
+                    const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(gift.search_query || gift.product_name)}`;
+                    const flipkartUrl = `https://www.flipkart.com/search?q=${encodeURIComponent(gift.product_name)}`;
+                    const isWishlisted = wishlist.some(w => w.name === gift.product_name);
 
                     const card = `
-                    <div id="gift-card-${index}" class="glass rounded-2xl p-6 border border-white/10 flex flex-col h-full transition-all duration-300">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-brand-500 border border-brand-500/30 px-2 py-1 rounded bg-brand-500/10">
-                                ${gift.category_tag}
-                            </span>
-                            <span class="font-rajdhani font-bold text-lg text-white">${gift.estimated_price}</span>
+                    <div id="gift-card-${index}" class="gift-card glass rounded-2xl p-5 border border-white/10 flex flex-col h-full animate-fade-in-up" style="animation-delay:${index * 0.1}s">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="font-mono text-[10px] uppercase tracking-widest text-orange-500 border border-orange-500/30 px-2 py-1 rounded bg-orange-500/10">${gift.category_tag}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleWishlist(this, ${index})" class="interactive-btn heart-btn text-lg ${isWishlisted ? 'liked' : ''}">${isWishlisted ? '❤️' : '🤍'}</button>
+                            </div>
                         </div>
                         
-                        <h3 class="font-bebas text-3xl tracking-wide mb-2">${gift.product_name}</h3>
-                        <p class="font-rajdhani text-gray-400 text-sm mb-6 flex-grow leading-relaxed">${gift.description}</p>
+                        <h3 class="font-bebas text-2xl tracking-wide mb-1">${gift.product_name}</h3>
+                        <div class="price-tag rounded-lg px-3 py-1 mb-3 inline-flex items-center gap-2 self-start">
+                            <span class="font-rajdhani font-bold text-orange-400">${gift.estimated_price}</span>
+                        </div>
                         
-                        <div class="mb-4 w-full bg-white/5 p-3 rounded-lg border border-white/10">
-                            <div class="flex justify-between font-bebas tracking-widest text-sm text-gray-300 mb-2">
-                                <span>AI Match Confidence</span>
+                        <p class="font-rajdhani text-gray-400 text-sm mb-3 flex-grow leading-relaxed">${gift.description}</p>
+
+                        <div class="bg-white/5 border border-white/10 p-3 rounded-lg mb-3 text-xs">
+                            <span class="text-orange-400 font-bold">💡 Why perfect:</span>
+                            <span class="font-rajdhani text-gray-300 ml-1">${gift.why_perfect}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between font-mono text-xs text-gray-400 mb-1.5">
+                                <span>AI Confidence Match</span>
                                 <span class="text-white font-bold">${gift.confidence_score}%</span>
                             </div>
                             <div class="meter-track">
-                                <div class="meter-fill ${meterColor}" style="width: 0%" data-target="${gift.confidence_score}%"></div>
+                                <div class="meter-fill ${meterClass}" style="width: 0%" data-target="${gift.confidence_score}%"></div>
                             </div>
                         </div>
+
+                        <div class="flex gap-2 mb-3">
+                            <a href="${searchUrl}" target="_blank" class="interactive-btn flex-1 bg-white/5 hover:bg-white/10 text-white font-mono text-xs tracking-widest uppercase font-bold py-2 rounded-lg border border-white/15 transition-colors text-center">Amazon</a>
+                            <a href="${flipkartUrl}" target="_blank" class="interactive-btn flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-mono text-xs tracking-widest uppercase font-bold py-2 rounded-lg border border-blue-500/20 transition-colors text-center">Flipkart</a>
+                        </div>
                         
-                        <button type="button" onclick="toggleShortlist(this, ${index})" class="interactive-btn w-full bg-white/5 hover:bg-white/10 text-white font-mono text-sm tracking-widest uppercase font-bold py-4 rounded-xl border border-white/20 transition-colors">
-                            Add to Shortlist
+                        <button type="button" onclick="addToCart(${index})" class="interactive-btn btn-shine w-full bg-orange-500/80 hover:bg-orange-500 text-white font-mono text-xs tracking-widest uppercase font-bold py-3 rounded-xl border border-orange-500/50 transition-all" id="cart-btn-${index}">
+                            + Add to Gift Box
                         </button>
                     </div>`;
                     giftsGrid.innerHTML += card;
                 });
-                
-                bindCursorHover();
-                goToSlide(2);
 
-                // Animate meters explicitly after rendering
+                bindCursorHover();
+                goToSlide(3);
+
                 setTimeout(() => {
-                    const meters = giftsGrid.querySelectorAll('.meter-fill');
-                    meters.forEach(meter => {
-                        meter.style.width = meter.getAttribute('data-target');
+                    giftsGrid.querySelectorAll('.meter-fill').forEach(m => {
+                        m.style.width = m.getAttribute('data-target');
                     });
                 }, 800);
 
             } catch (err) {
-                // FIX 4: The toast will now display the EXACT error text from Google instead of just "API Error"
                 showToast("AI Error: " + err.message);
-                console.error("Payload that failed:", JSON.stringify(payload, null, 2));
+                if (err.message.includes("API key") || err.message.includes("key")) {
+                    sessionStorage.removeItem("gemini_api_key");
+                    apiKey = null;
+                }
             } finally {
                 btnGenerate.disabled = false;
-                btnText.innerText = "Analyze & Curate";
+                btnText.innerText = "✨ Analyze & Curate";
                 btnSpinner.classList.add('hidden');
+            }
+        });
+
+        // ==========================================
+        // VIEW TOP PICKS
+        // ==========================================
+        function viewTop3Picks() {
+            showToast("Generating your Top Picks...", '#F59E0B');
+            const recGrid = document.getElementById('recipientGrid');
+            const recEmpty = document.getElementById('recipientEmpty');
+            const satBox = document.getElementById('satisfactionBox');
+            recEmpty.classList.add('hidden');
+            recGrid.classList.remove('hidden');
+            satBox.classList.remove('hidden');
+            document.getElementById('voteButtons').classList.remove('hidden');
+            document.getElementById('voteResponse').classList.add('hidden');
+            recGrid.innerHTML = '';
+
+            const picks = cartItems.length > 0 ? cartItems : window.latestGifts.slice(0, 3).map(g => ({ name: g.product_name, desc: g.description, tag: g.category_tag, tip: g.customization_tip, priceStr: g.estimated_price }));
+
+            const cols = picks.length <= 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-3';
+            recGrid.className = `grid ${cols} gap-5 w-full scrollable-content pb-4`;
+
+            picks.forEach((item) => {
+                const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(item.name)}`;
+                recGrid.innerHTML += `
+                    <div class="gift-card glass rounded-2xl p-6 border border-white/10 flex flex-col h-full animate-fade-in-up">
+                        <span class="font-mono text-[10px] uppercase tracking-widest text-orange-500 border border-orange-500/30 px-2 py-1 rounded w-max mb-3 bg-orange-500/10">${item.tag || 'Gift'}</span>
+                        <h3 class="font-bebas text-3xl tracking-wide mb-1">${item.name}</h3>
+                        <p class="font-mono text-sm text-orange-400 font-bold mb-3">${item.priceStr || item.price || ''}</p>
+                        <p class="font-rajdhani text-gray-300 text-sm mb-4 leading-relaxed flex-1">${item.desc}</p>
+                        <div class="bg-white/5 border border-white/10 p-3 rounded-lg mb-4">
+                            <span class="text-xs text-orange-500 font-bold uppercase tracking-wider block mb-1">💡 How to Get It:</span>
+                            <p class="text-sm font-rajdhani text-gray-300">${item.tip || 'Available on Amazon India or local gift stores.'}</p>
+                        </div>
+                        <a href="${searchUrl}" target="_blank" class="interactive-btn btn-shine w-full bg-white hover:bg-gray-200 text-black font-mono text-sm tracking-widest uppercase font-bold py-3 text-center rounded-xl transition-colors flex items-center justify-center gap-2">
+                            Buy on Amazon →
+                        </a>
+                    </div>
+                `;
+            });
+
+            bindCursorHover();
+            setTimeout(() => goToSlide(4), 500); 
+        }
+
+        function filterGifts(filter, btn) {
+            document.querySelectorAll('.filter-pill').forEach(p => {
+                p.classList.remove('border-orange-500', 'bg-orange-500/10', 'text-orange-400');
+                p.classList.add('border-white/20', 'bg-white/5', 'text-gray-400');
+            });
+            btn.classList.add('border-orange-500', 'bg-orange-500/10', 'text-orange-400');
+            btn.classList.remove('border-white/20', 'bg-white/5', 'text-gray-400');
+
+            const cards = document.querySelectorAll('#giftsGrid > div');
+            cards.forEach((card, i) => {
+                const gift = window.latestGifts[i];
+                if (!gift) return;
+                const price = parseInt((gift.estimated_price || '').replace(/[₹,\s]/g, '').match(/\d+/)?.[0] || 9999);
+                let show = true;
+                if (filter === 'under1k') show = price < 1000;
+                if (filter === 'premium') show = price >= 3000;
+                card.style.display = show ? '' : 'none';
+            });
+        }
+
+        function submitSatisfaction(isHappy) {
+            document.getElementById('voteButtons').classList.add('hidden');
+            const res = document.getElementById('voteResponse');
+            res.classList.remove('hidden');
+            if (isHappy) {
+                allTimeHappy++;
+                localStorage.setItem('gg_happy_customers', allTimeHappy);
+                updateAllMetrics();
+                showToast("We're so glad! 🎉", '#10B981');
+                res.innerText = "THANKS! GLAD YOU LOVED IT. 🎊";
+                res.className = 'font-bebas text-2xl tracking-widest text-green-400 mt-2';
+                triggerConfetti();
+            } else {
+                showToast("Thanks for feedback. We'll do better!");
+                res.innerText = "WE'LL DO BETTER NEXT TIME. 💪";
+                res.className = 'font-bebas text-2xl tracking-widest text-gray-400 mt-2';
+            }
+        }
+
+        // ==========================================
+        // FRIENDS VOTING FEATURE
+        // ==========================================
+        function generatePollLink() {
+            if (window.latestGifts.length === 0) {
+                showToast("No gifts to share yet!");
+                return;
+            }
+            
+            const recipient = document.getElementById('recipient').value || 'our friend';
+            
+            const pollData = {
+                for: recipient,
+                options: window.latestGifts.map(g => ({ n: g.product_name, p: g.estimated_price, d: g.description }))
+            };
+
+            const encodedData = btoa(encodeURIComponent(JSON.stringify(pollData)));
+            const shareUrl = window.location.origin + window.location.pathname + "?poll=" + encodedData;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast("🔗 Poll Link Copied! Send it to your friends.", "#3B82F6");
+            }).catch(() => {
+                prompt("Copy this link to share:", shareUrl);
+            });
+        }
+
+        function submitVote(giftName, recipientName) {
+            const msg = `Hey! I just voted on your GiftGenius poll. I think you should definitely get the *${giftName}* for ${recipientName}!`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pollParam = urlParams.get('poll');
+
+            if (pollParam) {
+                try {
+                    const pollData = JSON.parse(decodeURIComponent(atob(pollParam)));
+                    
+                    document.getElementById('votingOverlay').classList.remove('hidden');
+                    document.getElementById('track').style.display = 'none';
+                    document.querySelector('nav').style.display = 'none';
+                    
+                    const grid = document.getElementById('votingGrid');
+                    grid.innerHTML = '';
+
+                    pollData.options.forEach((gift) => {
+                        grid.innerHTML += `
+                            <div class="glass rounded-2xl p-6 border border-white/10 flex flex-col h-full animate-fade-in-up">
+                                <h3 class="font-bebas text-3xl tracking-wide mb-2">${gift.n}</h3>
+                                <p class="font-mono text-sm text-orange-400 font-bold mb-3">${gift.p}</p>
+                                <p class="font-rajdhani text-gray-300 text-base flex-1 mb-6">${gift.d}</p>
+                                <button onclick="submitVote('${gift.n.replace(/'/g, "\\'")}', '${pollData.for.replace(/'/g, "\\'")}')" class="interactive-btn btn-shine w-full bg-orange-600 hover:bg-orange-500 text-white font-mono text-sm uppercase tracking-widest font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-orange-500/30">
+                                    Vote For This Gift 👆
+                                </button>
+                            </div>
+                        `;
+                    });
+                } catch (e) {
+                    console.error("Invalid poll link", e);
+                    alert("This voting link seems to be broken or expired.");
+                }
             }
         });
     </script>
